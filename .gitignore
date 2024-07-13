@@ -1,0 +1,6 @@
+raylib
+build
+
+*.html
+*.wasm
+*.js
