@@ -48,7 +48,8 @@ int main(void)
     int attackFrameCounter = 0;
     int moveRightFrameCounter = 0;
     int moveLeftFrameCounter = 0;
-    double playerMoveVector = 0;
+    double playerHMoveVector = 0;
+    double playerVMoveVector = 0;
 
     SetTargetFPS(60);
     //------------------------------------------------------------------------------
@@ -61,12 +62,12 @@ int main(void)
         //--------------------------------------------------------------------------
         framesCounter++;
 
-        playerPosition.x += playerMoveVector;
+        playerPosition.x += playerHMoveVector;
 
         if(IsKeyDown(KEY_A)) 
         {
             setAttackState();
-            playerMoveVector = 0;
+            playerHMoveVector = 0;
         }
 
         if(IsKeyDown(KEY_RIGHT))
@@ -74,10 +75,10 @@ int main(void)
             if(!attackState) 
             {
                 moveRightState = true;
-                playerMoveVector += 0.5;
-                if(playerMoveVector > 2)
+                playerHMoveVector += 0.5;
+                if(playerHMoveVector > 2)
                 {
-                    playerMoveVector = 2;
+                    playerHMoveVector = 2;
                 }
             }
         }
@@ -90,10 +91,10 @@ int main(void)
             if(!attackState) 
             {
                 moveLeftState = true;
-                playerMoveVector -= 0.5;
-                if(playerMoveVector < -2)
+                playerHMoveVector -= 0.5;
+                if(playerHMoveVector < -2)
                 {
-                    playerMoveVector = -2;
+                    playerHMoveVector = -2;
                 }
             }
         }
@@ -104,24 +105,25 @@ int main(void)
 
         if(!moveLeftState && !moveRightState && !attackState)
         {
-            if(playerMoveVector > 0)
+            if(playerHMoveVector > 0)
             {
-                playerMoveVector -= 0.5;
-                if(playerMoveVector < 0)
+                playerHMoveVector -= 0.5;
+                if(playerHMoveVector < 0)
                 {
-                    playerMoveVector = 0;
+                    playerHMoveVector = 0;
                 }
             }
 
-            if(playerMoveVector < 0)
+            if(playerHMoveVector < 0)
             {
-                playerMoveVector += 0.5;
-                if(playerMoveVector > 0)
+                playerHMoveVector += 0.5;
+                if(playerHMoveVector > 0)
                 {
-                    playerMoveVector = 0;
+                    playerHMoveVector = 0;
                 }
             }
         }
+
 
 
         // Set animating frame
