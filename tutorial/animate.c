@@ -13,12 +13,17 @@
 
 bool attackState = false;
 bool moveRightState = false;
-
 bool moveLeftState = false;
+bool jumpState = false;
 
 void setAttackState()
 {
     if(!attackState) attackState = true;
+}
+
+void setJumpState()
+{
+    if(!jumpState) jumpState = true;
 }
 
 int main(void)
@@ -39,7 +44,8 @@ int main(void)
         return -1;  // Or handle the error as appropriate
     }
 
-    Vector2 playerPosition = {550.0f, 280.0f}; // player start position
+    const float initialPlayerYPosition = 280.0f;
+    Vector2 playerPosition = {550.0f, initialPlayerYPosition}; // player start position
     Rectangle frameRec = {0.0f, 0.0f, (float)scarfy.width / 6, (float)scarfy.height / 8 * 1}; 
 
 
@@ -48,8 +54,8 @@ int main(void)
     int attackFrameCounter = 0;
     int moveRightFrameCounter = 0;
     int moveLeftFrameCounter = 0;
-    double playerHMoveVector = 0;
-    double playerVMoveVector = 0;
+    float playerHMoveVector = 0;
+    float playerVMoveVector = 0;
 
     SetTargetFPS(60);
     //------------------------------------------------------------------------------
@@ -64,10 +70,30 @@ int main(void)
 
         playerPosition.x += playerHMoveVector;
 
+        if(playerPosition.y + playerVMoveVector < initialPlayerYPosition)
+        {
+            playerPosition.y += playerVMoveVector;
+            playerVMoveVector += 1; // 플레이어에게 중력 작용
+        }
+        else
+        {
+            playerPosition.y = initialPlayerYPosition;
+            playerVMoveVector = 0;
+            jumpState = false;
+        }
+        
+
+        
+
         if(IsKeyDown(KEY_A)) 
         {
             setAttackState();
-            playerHMoveVector = 0;
+            if(!jumpState) playerHMoveVector = 0;
+        }
+        if(IsKeyDown(KEY_D))
+        {
+            if(!jumpState) playerVMoveVector = -10;
+            setJumpState();
         }
 
         if(IsKeyDown(KEY_RIGHT))
@@ -103,7 +129,7 @@ int main(void)
             moveLeftState = false;
         }
 
-        if(!moveLeftState && !moveRightState && !attackState)
+        if(!moveLeftState && !moveRightState && !jumpState)
         {
             if(playerHMoveVector > 0)
             {
