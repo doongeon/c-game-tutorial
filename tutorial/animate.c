@@ -63,7 +63,7 @@ int main(void)
 
         playerPosition.x += playerMoveVector;
 
-        if(IsKeyDown(KEY_SPACE)) 
+        if(IsKeyDown(KEY_A)) 
         {
             setAttackState();
             playerMoveVector = 0;
