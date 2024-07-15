@@ -14,7 +14,7 @@
 bool attackState = false;
 bool moveRightState = false;
 bool moveLeftState = false;
-bool jumpState = false;
+bool jumpState = true;
 
 void setAttackState()
 {
@@ -28,6 +28,8 @@ void setJumpState()
 
 typedef struct Player {
     Vector2 position; // player start position
+    int width;
+    int height;
     Rectangle frameRec;
     float hMoveVector;
     float vMoveVector;
@@ -36,6 +38,12 @@ typedef struct Player {
     int moveRightFrameCounter;
     int moveLeftFrameCounter;
 } Player;
+
+typedef struct EnvItem {
+    Rectangle rect;
+    int blocking;
+    Color color;
+} EnvItem;
 
 int main(void)
 {
@@ -55,10 +63,9 @@ int main(void)
         return -1;  // Or handle the error as appropriate
     }
 
-    const float initialPlayerYPosition = 280.0f;
-
+    const float groundYPosition = 280.0f;
     Player player;
-    player.position = (Vector2){550.0f, initialPlayerYPosition};
+    player.position = (Vector2){550.0f, groundYPosition - 100};
     player.frameRec = (Rectangle){0.0f, 0.0f, (float)scarfy.width / 6, (float)scarfy.height / 8 * 1};
     player.standingFrameCounter = 0;
     player.attackFrameCounter = 0;
@@ -67,10 +74,14 @@ int main(void)
     player.hMoveVector = 0;
     player.vMoveVector = 0;
 
-
+    EnvItem envItems[] = {
+        {{ 0, 0, screenWidth, screenHeight }, 0, WHITE },
+        {{ 0, groundYPosition, 1000, 200 }, 1, GRAY },
+        {{ screenWidth/2, groundYPosition - player.frameRec.height/2, 100, player.frameRec.height/3 }, 1, GRAY }
+    };
+    int envItemsLength = sizeof(envItems)/sizeof(EnvItem);
 
     int framesCounter = 0;
-    // float playerVMoveVector = 0;
 
     SetTargetFPS(60);
     //------------------------------------------------------------------------------
@@ -83,23 +94,38 @@ int main(void)
         //--------------------------------------------------------------------------
         framesCounter++;
 
-        player.position.x += player.hMoveVector;
 
-        if(player.position.y + player.vMoveVector < initialPlayerYPosition)
+        bool hitObstacle = false;
+
+        for(int i = 0; i < envItemsLength; i++)
         {
-            player.position.y += player.vMoveVector;
-            player.vMoveVector += 1; // 플레이어에게 중력 작용
+            EnvItem *ei = envItems + i;
+            Player *p = &player;
+            if (
+                ei->blocking &&
+                ei->rect.x <= p->position.x + abs((int)(p->frameRec.width)) - 30 &&
+                ei->rect.x + ei->rect.width >= p->position.x + 30 &&
+                ei->rect.y >= p->position.y + p->frameRec.height - 3 &&
+                ei->rect.y <= p->position.y + p->frameRec.height - 3 + player.vMoveVector)
+            {
+                hitObstacle = true;
+            }
         }
-        else
+        if(hitObstacle)
         {
-            player.position.y = initialPlayerYPosition;
             player.vMoveVector = 0;
             jumpState = false;
         }
-        
+        else
+        {
+            player.vMoveVector += 1;
+            jumpState = true;
+        }
 
+        player.position.x += player.hMoveVector;
+        player.position.y += player.vMoveVector;
         
-
+        
         if(IsKeyDown(KEY_A)) 
         {
             setAttackState();
@@ -249,17 +275,17 @@ int main(void)
         //--------------------------------------------------------------------------
         BeginDrawing();
         {
-            ClearBackground(RAYWHITE);
-            
-            DrawTexture(scarfy, 15, 40, WHITE);
-            DrawRectangleLines(15, 40, scarfy.width, scarfy.height, LIME);
+            ClearBackground(WHITE);
+
             DrawRectangleLines(
-                15 + (int)player.frameRec.x,
-                40 + (int)player.frameRec.y,
-                abs((int)player.frameRec.width),
-                abs((int)player.frameRec.height),
-                RED
+                player.position.x,
+                player.position.y,
+                player.frameRec.width,
+                player.frameRec.height,
+                LIME
             );
+
+            for (int i = 0; i < envItemsLength; i++) DrawRectangleRec(envItems[i].rect, envItems[i].color);
 
             DrawTextureRec(scarfy, player.frameRec, player.position, WHITE);
         }
