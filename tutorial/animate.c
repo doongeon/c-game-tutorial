@@ -6,7 +6,6 @@
 
 
 
-#define FRAME_SPEED  8
 #define NUM_WALKING_FRAME 6
 #define NUM_STAND_FRAME 4
 #define NUM_ATTACK_FRAME 4
@@ -18,12 +17,17 @@ bool jumpState = true;
 
 void setAttackState()
 {
-    if(!attackState) attackState = true;
+    if(!attackState) 
+    {
+        attackState = true;
+        moveLeftState = false;
+        moveRightState = false;
+    }
 }
 
 void setJumpState()
 {
-    if(!jumpState) jumpState = true;
+    if(!jumpState && !attackState) jumpState = true;
 }
 
 typedef struct Player {
@@ -94,9 +98,9 @@ int main(void)
         //--------------------------------------------------------------------------
         framesCounter++;
 
-
         bool hitObstacle = false;
 
+        
         for(int i = 0; i < envItemsLength; i++)
         {
             EnvItem *ei = envItems + i;
@@ -107,8 +111,9 @@ int main(void)
                 ei->rect.x + ei->rect.width >= p->position.x + 30 &&
                 ei->rect.y >= p->position.y + p->frameRec.height - 3 &&
                 ei->rect.y <= p->position.y + p->frameRec.height - 3 + player.vMoveVector)
-            {
+            {   
                 hitObstacle = true;
+                if(hitObstacle) break;
             }
         }
         if(hitObstacle)
@@ -125,26 +130,34 @@ int main(void)
         player.position.x += player.hMoveVector;
         player.position.y += player.vMoveVector;
         
-        
         if(IsKeyDown(KEY_A)) 
         {
             setAttackState();
         }
         if(IsKeyDown(KEY_D))
         {
-            if(!jumpState) player.vMoveVector = -10;
+            if(!jumpState && !attackState) player.vMoveVector = -10;
             setJumpState();
         }
         if(IsKeyDown(KEY_RIGHT))
         {   
-            if(!attackState) 
-            {
+            if(!attackState && !jumpState) 
+            {   
                 moveRightState = true;
                 player.hMoveVector += 0.5;
-                if(player.hMoveVector > 2)
-                {
-                    player.hMoveVector = 2;
-                }
+            }
+            else if(!attackState && jumpState)
+            {
+                moveRightState = true;
+                player.hMoveVector += 0.2;
+            }
+            else
+            {
+                moveLeftState = false;
+            }
+            if(player.hMoveVector > 2)
+            {
+                player.hMoveVector = 2;
             }
         }
         if(IsKeyUp(KEY_RIGHT))
@@ -153,14 +166,23 @@ int main(void)
         }
         if(IsKeyDown(KEY_LEFT))
         {   
-            if(!attackState) 
+            if(!attackState && !jumpState) 
             {
                 moveLeftState = true;
                 player.hMoveVector -= 0.5;
-                if(player.hMoveVector < -2)
-                {
-                    player.hMoveVector = -2;
-                }
+            }
+            else if(!attackState && jumpState)
+            {
+                moveLeftState = true;
+                player.hMoveVector -= 0.2;
+            }
+            else
+            {
+                moveLeftState = false;
+            }
+            if(player.hMoveVector < -2)
+            {
+                player.hMoveVector = -2;
             }
         }
         if(IsKeyUp(KEY_LEFT))
@@ -193,9 +215,9 @@ int main(void)
 
         // Set animating frame
         //
-        if(attackState && framesCounter >= (60 / 8)) 
+        if(attackState && framesCounter >= (60 / 6)) 
         {
-            // 공격하는 프레임 설정 ( 8 FPS )
+            // 공격하는 프레임 설정 ( 6 FPS )
             //           
             framesCounter = 0;
 
@@ -203,10 +225,13 @@ int main(void)
             player.frameRec.y = scarfy.height / 8 * 3;
 
             player.attackFrameCounter++;
+
+            if(!jumpState) player.hMoveVector = 0;
+
             if(player.attackFrameCounter > NUM_ATTACK_FRAME - 1)
             {
                 player.attackFrameCounter = 0;
-                framesCounter = 22;
+                framesCounter = 30;
                 attackState = false;
             }
         } else if(moveRightState && framesCounter >= (60 / 8)) 
