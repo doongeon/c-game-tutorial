@@ -19,7 +19,7 @@ find_library(RL_LIBRARY raylib PATHS /opt/homebrew/opt/raylib/lib)
 # message("Raylib library: ${RL_LIBRARY}")
 
 # 실행 파일 생성
-add_executable(MyRaylibProject ./tutorial/ex_03.c)
+add_executable(MyRaylibProject ./tutorial/animate.c)
 
 # raylib 라이브러리와 링크
 target_link_libraries(MyRaylibProject ${RL_LIBRARY})
