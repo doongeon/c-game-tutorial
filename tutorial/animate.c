@@ -26,6 +26,17 @@ void setJumpState()
     if(!jumpState) jumpState = true;
 }
 
+typedef struct Player {
+    Vector2 position; // player start position
+    Rectangle frameRec;
+    float hMoveVector;
+    float vMoveVector;
+    int standingFrameCounter;
+    int attackFrameCounter;
+    int moveRightFrameCounter;
+    int moveLeftFrameCounter;
+} Player;
+
 int main(void)
 {
     // Initialization
@@ -45,17 +56,21 @@ int main(void)
     }
 
     const float initialPlayerYPosition = 280.0f;
-    Vector2 playerPosition = {550.0f, initialPlayerYPosition}; // player start position
-    Rectangle frameRec = {0.0f, 0.0f, (float)scarfy.width / 6, (float)scarfy.height / 8 * 1}; 
+
+    Player player;
+    player.position = (Vector2){550.0f, initialPlayerYPosition};
+    player.frameRec = (Rectangle){0.0f, 0.0f, (float)scarfy.width / 6, (float)scarfy.height / 8 * 1};
+    player.standingFrameCounter = 0;
+    player.attackFrameCounter = 0;
+    player.moveRightFrameCounter = 0;
+    player.moveLeftFrameCounter = 0;
+    player.hMoveVector = 0;
+    player.vMoveVector = 0;
+
 
 
     int framesCounter = 0;
-    int standingFrameCounter = 0;
-    int attackFrameCounter = 0;
-    int moveRightFrameCounter = 0;
-    int moveLeftFrameCounter = 0;
-    float playerHMoveVector = 0;
-    float playerVMoveVector = 0;
+    // float playerVMoveVector = 0;
 
     SetTargetFPS(60);
     //------------------------------------------------------------------------------
@@ -68,17 +83,17 @@ int main(void)
         //--------------------------------------------------------------------------
         framesCounter++;
 
-        playerPosition.x += playerHMoveVector;
+        player.position.x += player.hMoveVector;
 
-        if(playerPosition.y + playerVMoveVector < initialPlayerYPosition)
+        if(player.position.y + player.vMoveVector < initialPlayerYPosition)
         {
-            playerPosition.y += playerVMoveVector;
-            playerVMoveVector += 1; // 플레이어에게 중력 작용
+            player.position.y += player.vMoveVector;
+            player.vMoveVector += 1; // 플레이어에게 중력 작용
         }
         else
         {
-            playerPosition.y = initialPlayerYPosition;
-            playerVMoveVector = 0;
+            player.position.y = initialPlayerYPosition;
+            player.vMoveVector = 0;
             jumpState = false;
         }
         
@@ -88,23 +103,21 @@ int main(void)
         if(IsKeyDown(KEY_A)) 
         {
             setAttackState();
-            if(!jumpState) playerHMoveVector = 0;
         }
         if(IsKeyDown(KEY_D))
         {
-            if(!jumpState) playerVMoveVector = -10;
+            if(!jumpState) player.vMoveVector = -10;
             setJumpState();
         }
-
         if(IsKeyDown(KEY_RIGHT))
         {   
             if(!attackState) 
             {
                 moveRightState = true;
-                playerHMoveVector += 0.5;
-                if(playerHMoveVector > 2)
+                player.hMoveVector += 0.5;
+                if(player.hMoveVector > 2)
                 {
-                    playerHMoveVector = 2;
+                    player.hMoveVector = 2;
                 }
             }
         }
@@ -117,10 +130,10 @@ int main(void)
             if(!attackState) 
             {
                 moveLeftState = true;
-                playerHMoveVector -= 0.5;
-                if(playerHMoveVector < -2)
+                player.hMoveVector -= 0.5;
+                if(player.hMoveVector < -2)
                 {
-                    playerHMoveVector = -2;
+                    player.hMoveVector = -2;
                 }
             }
         }
@@ -131,21 +144,21 @@ int main(void)
 
         if(!moveLeftState && !moveRightState && !jumpState)
         {
-            if(playerHMoveVector > 0)
+            if(player.hMoveVector > 0)
             {
-                playerHMoveVector -= 0.5;
-                if(playerHMoveVector < 0)
+                player.hMoveVector -= 0.5;
+                if(player.hMoveVector < 0)
                 {
-                    playerHMoveVector = 0;
+                    player.hMoveVector = 0;
                 }
             }
 
-            if(playerHMoveVector < 0)
+            if(player.hMoveVector < 0)
             {
-                playerHMoveVector += 0.5;
-                if(playerHMoveVector > 0)
+                player.hMoveVector += 0.5;
+                if(player.hMoveVector > 0)
                 {
-                    playerHMoveVector = 0;
+                    player.hMoveVector = 0;
                 }
             }
         }
@@ -160,13 +173,13 @@ int main(void)
             //           
             framesCounter = 0;
 
-            frameRec.x = (float)attackFrameCounter * (float)scarfy.width / 6;
-            frameRec.y = scarfy.height / 8 * 3;
+            player.frameRec.x = (float)player.attackFrameCounter * (float)scarfy.width / 6;
+            player.frameRec.y = scarfy.height / 8 * 3;
 
-            attackFrameCounter++;
-            if(attackFrameCounter > NUM_ATTACK_FRAME - 1)
+            player.attackFrameCounter++;
+            if(player.attackFrameCounter > NUM_ATTACK_FRAME - 1)
             {
-                attackFrameCounter = 0;
+                player.attackFrameCounter = 0;
                 framesCounter = 22;
                 attackState = false;
             }
@@ -176,20 +189,20 @@ int main(void)
             //
             framesCounter = 0;
 
-            frameRec.x = (float)moveRightFrameCounter * (float)scarfy.width / 6;
-            frameRec.y = scarfy.height / 8 * 0;
+            player.frameRec.x = (float)player.moveRightFrameCounter * (float)scarfy.width / 6;
+            player.frameRec.y = scarfy.height / 8 * 0;
 
-            if(frameRec.width < 0)
+            if(player.frameRec.width < 0)
             {
                 // 캐릭터가 오른쪽을 보도록 지정
                 //
-                frameRec.width *= -1;
+                player.frameRec.width *= -1;
             }
 
-            moveRightFrameCounter++;
-            if(moveRightFrameCounter > 5)
+            player.moveRightFrameCounter++;
+            if(player.moveRightFrameCounter > 5)
             {
-                moveRightFrameCounter = 0;
+                player.moveRightFrameCounter = 0;
                 framesCounter = 30;
             }
         }
@@ -198,21 +211,18 @@ int main(void)
             // 왼쪽으로 이동하는 프레임임 설정 ( 8 FPS )
             //
             framesCounter = 0;
-
-            frameRec.x = (float)moveLeftFrameCounter * (float)scarfy.width / 6;
-            frameRec.y = scarfy.height / 8 * 0;
-
-            if(frameRec.width > 0)
+            player.frameRec.x = (float)player.moveLeftFrameCounter * (float)scarfy.width / 6;
+            player.frameRec.y = scarfy.height / 8 * 0;
+            if(player.frameRec.width > 0)
             {
                 // 캐릭터가 왼쪽을 보도록 지정
                 //
-                frameRec.width *= -1;
+                player.frameRec.width *= -1;
             }
-
-            moveLeftFrameCounter++;
-            if(moveLeftFrameCounter > 5)
+            player.moveLeftFrameCounter++;
+            if(player.moveLeftFrameCounter > 5)
             {
-                moveLeftFrameCounter = 0;
+                player.moveLeftFrameCounter = 0;
                 framesCounter = 30;
             }
         }
@@ -222,13 +232,13 @@ int main(void)
             //
             framesCounter = 0;
             
-            frameRec.x = (float)standingFrameCounter * (float)scarfy.width / 6;
-            frameRec.y = scarfy.height / 8 * 1;
+            player.frameRec.x = (float)player.standingFrameCounter * (float)scarfy.width / 6;
+            player.frameRec.y = scarfy.height / 8 * 1;
 
-            standingFrameCounter++;
-            if (standingFrameCounter >= NUM_STAND_FRAME)
+            player.standingFrameCounter++;
+            if (player.standingFrameCounter >= NUM_STAND_FRAME)
             {
-                standingFrameCounter = 0;
+                player.standingFrameCounter = 0;
             }
             
         }        
@@ -240,18 +250,18 @@ int main(void)
         BeginDrawing();
         {
             ClearBackground(RAYWHITE);
-
+            
             DrawTexture(scarfy, 15, 40, WHITE);
             DrawRectangleLines(15, 40, scarfy.width, scarfy.height, LIME);
             DrawRectangleLines(
-                15 + (int)frameRec.x,
-                40 + (int)frameRec.y,
-                abs((int)frameRec.width),
-                abs((int)frameRec.height),
+                15 + (int)player.frameRec.x,
+                40 + (int)player.frameRec.y,
+                abs((int)player.frameRec.width),
+                abs((int)player.frameRec.height),
                 RED
             );
 
-            DrawTextureRec(scarfy, frameRec, playerPosition, WHITE);
+            DrawTextureRec(scarfy, player.frameRec, player.position, WHITE);
         }
         EndDrawing();
         //--------------------------------------------------------------------------
