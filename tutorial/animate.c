@@ -2,6 +2,7 @@
 #include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define TEXTURE_FILE_PATH "/Users/donggeon/Documents/c-raylib/tutorial/resources/character.png"
 
@@ -79,6 +80,20 @@ Image GenerateUnderGroundTexture(int width, int height)
 
 // Game assets
 // ----------------------------------------------------------------------------------
+typedef struct Weapon
+{
+    char *name;
+    Rectangle range;
+} Weapon;
+
+Weapon createSword()
+{
+    Weapon result;
+    result.name = "sword";
+    result.range = (Rectangle) {0, 0, 40, 30};
+    return result;
+};
+
 typedef struct Slime
 {
     Vector2 position;
@@ -91,7 +106,7 @@ Slime createSlime()
     Slime result;
     result.frameRec = (Rectangle){0, 0, 20, 20};
     result.position = (Vector2){700, GROUND_Y_POSITION - result.frameRec.height};
-    result.color = PURPLE;
+    result.color = VIOLET;
     return result;
 }
 
