@@ -93,7 +93,7 @@ Weapon createSword()
 {
     Weapon result;
     result.name = "sword";
-    result.range = (Rectangle) {0, 0, 40, 30};
+    result.range = (Rectangle){0, 0, 35, 47};
     return result;
 };
 
@@ -124,22 +124,80 @@ typedef struct Player
     int attackFrameCounter;
     int moveRightFrameCounter;
     int moveLeftFrameCounter;
+    Vector2 weaponRanegePosition;
 } Player;
 
 Player createPlayer()
 {
-    Player result;
-    result.frameRec = (Rectangle){0.0f, 0.0f, (float)SCARFY_WIDTH / 6, (float)SCARFY_HEIGHT / 8 * 1};
-    result.position = (Vector2){550.0f, GROUND_Y_POSITION - result.frameRec.height};
-    result.weapon = createSword();
-    result.standingFrameCounter = 0;
-    result.attackFrameCounter = 0;
-    result.moveRightFrameCounter = 0;
-    result.moveLeftFrameCounter = 0;
-    result.hMoveVector = 0;
-    result.vMoveVector = 0;
+    Player player;
+    player.frameRec = (Rectangle){0.0f, 0.0f, (float)SCARFY_WIDTH / 6, (float)SCARFY_HEIGHT / 8 * 1};
+    player.position = (Vector2){550.0f, GROUND_Y_POSITION - player.frameRec.height};
+    player.weapon = createSword();
+    player.standingFrameCounter = 0;
+    player.attackFrameCounter = 0;
+    player.moveRightFrameCounter = 0;
+    player.moveLeftFrameCounter = 0;
+    player.hMoveVector = 0;
+    player.vMoveVector = 0;
+    player.weaponRanegePosition = (Vector2){player.position.x + abs((int)player.frameRec.width) / 2, player.position.y + player.frameRec.height - player.weapon.range.height + 10};
+    return player;
+}
 
-    return result;
+void updatePlayerPosition(Player *player)
+{
+    player->position.x += player->hMoveVector;
+    player->position.y += player->vMoveVector;
+
+    player->weaponRanegePosition = (Vector2){player->position.x + abs((int)player->frameRec.width) / 2, player->position.y + player->frameRec.height - player->weapon.range.height + 10};
+}
+
+void moveLeft(Player *player)
+{
+    if (!attackState && !jumpState && !moveRightState)
+    {
+        setMoveLeftState();
+        player->hMoveVector -= 0.5;
+    }
+    if (!attackState && jumpState && !moveRightState)
+    {
+        setMoveLeftState();
+        player->hMoveVector -= 0.2;
+    }
+    if (player->hMoveVector < -2)
+    {
+        player->hMoveVector = -2;
+    }
+}
+
+void attack(Player *player, Slime *slime)
+{
+    if (player->frameRec.width > 0) // 플레이어가 오른쪽을 볼때
+    {
+        if (
+            slime->position.x + slime->frameRec.width >= player->weaponRanegePosition.x &&
+            slime->position.x <= player->weaponRanegePosition.x + player->weapon.range.width &&
+            slime->position.y >= player->weaponRanegePosition.y &&
+            slime->position.y <= player->weaponRanegePosition.y + player->weapon.range.height)
+        {
+            BeginDrawing();
+            DrawText("hit", slime->position.x, slime->position.y - 30, 40, RED);
+            EndDrawing();
+        }
+    }
+    else // 플레이어가 왼쪽을 볼때
+    {   
+        if (
+            slime->position.x <= player->weaponRanegePosition.x &&
+            slime->position.x + slime->frameRec.width >= player->weaponRanegePosition.x - player->weapon.range.width &&
+            slime->position.y >= player->weaponRanegePosition.y &&
+            slime->position.y <= player->weaponRanegePosition.y + player->weapon.range.height
+        )
+        {
+            BeginDrawing();
+            DrawText("hit", slime->position.x, slime->position.y - 30, 40, RED);
+            EndDrawing();
+        }
+    }
 }
 
 typedef struct EnvItem
@@ -149,7 +207,6 @@ typedef struct EnvItem
     Color color;
 } EnvItem;
 // ----------------------------------------------------------------------------------
-
 
 int main(void)
 {
@@ -228,12 +285,15 @@ int main(void)
             jumpState = true;
         }
 
-        player.position.x += player.hMoveVector;
-        player.position.y += player.vMoveVector;
+        // player.position.x += player.hMoveVector;
+        // player.position.y += player.vMoveVector;
+
+        updatePlayerPosition(&player);
 
         if (IsKeyDown(KEY_A))
         {
             setAttackState();
+            attack(&player, &slime);
         }
         if (IsKeyDown(KEY_D))
         {
@@ -458,12 +518,22 @@ int main(void)
             // 플레이어
             //
             DrawTextureRec(scarfy, player.frameRec, player.position, WHITE);
-            DrawRectangleLines(
-                player.position.x,
-                player.position.y,
-                abs((int)(player.frameRec.width)),
-                player.frameRec.height,
-                LIME);
+            // DrawRectangleLines(
+            //     player.position.x,
+            //     player.position.y,
+            //     abs((int)(player.frameRec.width)),
+            //     player.frameRec.height,
+            //     LIME);
+            //
+
+            // 플레이어 공격 범위
+            //
+            // DrawRectangleLines(
+            //     player.weaponRanegePosition.x,
+            //     player.weaponRanegePosition.y,
+            //     player.frameRec.width > 0 ? player.weapon.range.width : -player.weapon.range.width,
+            //     player.weapon.range.height,
+            //     RED);
             //
         }
         EndDrawing();
