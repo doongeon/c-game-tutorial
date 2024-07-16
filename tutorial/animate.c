@@ -9,6 +9,8 @@
 #define NUM_STAND_FRAME 4
 #define NUM_ATTACK_FRAME 4
 
+#define GROUND_Y_POSITION 280.0f
+
 bool attackState = false;
 bool moveRightState = false;
 bool moveLeftState = false;
@@ -75,6 +77,24 @@ Image GenerateUnderGroundTexture(int width, int height)
     return image;
 }
 
+// Game assets
+// ----------------------------------------------------------------------------------
+typedef struct Slime
+{
+    Vector2 position;
+    Rectangle frameRec;
+    Color color;
+} Slime;
+
+Slime createSlime()
+{
+    Slime result;
+    result.frameRec = (Rectangle){0, 0, 20, 20};
+    result.position = (Vector2){700, GROUND_Y_POSITION - result.frameRec.height};
+    result.color = PURPLE;
+    return result;
+}
+
 typedef struct Player
 {
     Vector2 position;
@@ -93,6 +113,8 @@ typedef struct EnvItem
     int blocking;
     Color color;
 } EnvItem;
+// ----------------------------------------------------------------------------------
+
 
 int main(void)
 {
@@ -123,8 +145,10 @@ int main(void)
     player.hMoveVector = 0;
     player.vMoveVector = 0;
 
+    Slime slime = createSlime();
+
     EnvItem envItems[] = {
-        {{0, 0, screenWidth, screenHeight}, 0, WHITE},
+        {{0, 0, screenWidth, screenHeight}, 0, SKYBLUE},
         {{0, groundYPosition, 1000, 200}, 1, GRAY},
         {{screenWidth / 2, groundYPosition - 30, 100, 30}, 1, GRAY}};
     int envItemsLength = sizeof(envItems) / sizeof(EnvItem);
@@ -140,14 +164,6 @@ int main(void)
     UnloadImage(underGroundImage);
 
     SetTargetFPS(60);
-    //------------------------------------------------------------------------------
-
-    // draw map
-    //------------------------------------------------------------------------------
-    BeginDrawing();
-    {
-    }
-    EndDrawing();
     //------------------------------------------------------------------------------
 
     // Main game loop
@@ -355,12 +371,12 @@ int main(void)
             // map
             //
             for (int i = 0; i < envItemsLength; i++) // 블럭
-                DrawRectangleRec(envItems[i].rect, envItems[i].color); 
+                DrawRectangleRec(envItems[i].rect, envItems[i].color);
 
             for ( // 땅 흙 텍스쳐
                 int x = 0;
                 x < screenWidth;
-                x += underGroundTexture.width) 
+                x += underGroundTexture.width)
             {
                 for (
                     int y = groundYPosition + grassTexture.height;
@@ -373,7 +389,7 @@ int main(void)
             for ( // 땅 잔디 텍스쳐
                 int x = 0;
                 x < screenWidth;
-                x += grassTexture.width) 
+                x += grassTexture.width)
             {
                 for (int y = groundYPosition; y < groundYPosition + 10; y += grassTexture.height)
                 {
@@ -408,6 +424,10 @@ int main(void)
                 }
             }
             //
+
+            // 슬라임
+            //
+            DrawRectangle(slime.position.x, slime.position.y, slime.frameRec.width, slime.frameRec.height, slime.color);
 
             // 플레이어
             //
