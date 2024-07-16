@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TEXTURE_FILE_PATH "/Users/donggeon/Documents/c-raylib/tutorial/resources/character.png"
+#define TEXTURE_FILE_PATH "/Users/donggeon/Documents/c-raylib/resources/character.png"
 
 #define NUM_WALKING_FRAME 6
 #define NUM_STAND_FRAME 4
@@ -83,6 +83,12 @@ Image GenerateUnderGroundTexture(int width, int height)
 
 // Game assets
 // ----------------------------------------------------------------------------------
+typedef struct DamageGUI
+{
+    int frameCounter;
+    int hitFrameCounter;
+} DamageGUI;
+
 typedef struct Weapon
 {
     char *name;
