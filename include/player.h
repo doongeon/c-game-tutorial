@@ -43,6 +43,8 @@ void moveLeft(Player *player);
 
 void attack(Player *player, Slime *slime);
 
+void updatePlayerFrame(Texture2D scarfy, Player *player);
+
 // Draw
 //
 void drawPlayer(Texture2D scarfy, Player player);

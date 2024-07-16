@@ -84,9 +84,7 @@ int main(void)
     }
 
     Player player = createPlayer();
-
     Slime slime = createSlime();
-
     EnvItem envItems[] = {
         {{0, 0, screenWidth, screenHeight}, 0, SKYBLUE},
         {{0, GROUND_Y_POSITION, 1000, 200}, 1, GRAY},
@@ -223,86 +221,7 @@ int main(void)
 
         // Player
         //
-        player.frameCounter++;
-        if (player.attackState && player.frameCounter >= (60 / 6))
-        {
-            // 공격하는 프레임 설정 ( 6 FPS )
-            //
-            player.frameCounter = 0;
-
-            player.frameRec.x = (float)player.attackFrameCounter * (float)scarfy.width / 6;
-            player.frameRec.y = scarfy.height / 8 * 3;
-
-            player.attackFrameCounter++;
-
-            if (!player.jumpState)
-                player.hMoveVector = 0;
-
-            if (player.attackFrameCounter >= NUM_ATTACK_FRAME)
-            {
-                player.attackFrameCounter = 0;
-                player.frameCounter = 30;
-                player.attackState = false;
-            }
-        }
-        else if (player.moveRightState && player.frameCounter >= (60 / 8))
-        {
-            // 오른쪽으로 이동하는 프레임 설정 ( 8 FPS )
-            //
-            player.frameCounter = 0;
-
-            player.frameRec.x = (float)player.moveRightFrameCounter * (float)scarfy.width / 6;
-            player.frameRec.y = scarfy.height / 8 * 0;
-
-            if (player.frameRec.width < 0)
-            {
-                // 캐릭터가 오른쪽을 보도록 지정
-                //
-                player.frameRec.width *= -1;
-            }
-
-            player.moveRightFrameCounter++;
-            if (player.moveRightFrameCounter > 5)
-            {
-                player.moveRightFrameCounter = 0;
-                player.frameCounter = 30;
-            }
-        }
-        else if (player.moveLeftState && player.frameCounter >= (60 / 8))
-        {
-            // 왼쪽으로 이동하는 프레임임 설정 ( 8 FPS )
-            //
-            player.frameCounter = 0;
-            player.frameRec.x = (float)player.moveLeftFrameCounter * (float)scarfy.width / 6;
-            player.frameRec.y = scarfy.height / 8 * 0;
-            if (player.frameRec.width > 0)
-            {
-                // 캐릭터가 왼쪽을 보도록 지정
-                //
-                player.frameRec.width *= -1;
-            }
-            player.moveLeftFrameCounter++;
-            if (player.moveLeftFrameCounter > 5)
-            {
-                player.moveLeftFrameCounter = 0;
-                player.frameCounter = 30;
-            }
-        }
-        else if (player.frameCounter >= (60 / 2))
-        {
-            // 서있는 프레임 설정 ( 2FPS )
-            //
-            player.frameCounter = 0;
-
-            player.frameRec.x = (float)player.standingFrameCounter * (float)scarfy.width / 6;
-            player.frameRec.y = scarfy.height / 8 * 1;
-
-            player.standingFrameCounter++;
-            if (player.standingFrameCounter >= NUM_STAND_FRAME)
-            {
-                player.standingFrameCounter = 0;
-            }
-        }
+        updatePlayerFrame(scarfy, &player);
         //
 
         // slime

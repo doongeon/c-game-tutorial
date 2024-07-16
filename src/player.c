@@ -35,21 +35,27 @@ typedef struct Player
 Player createPlayer()
 {
     Player player;
+
     player.frameRec = (Rectangle){0.0f, 0.0f, (float)SCARFY_WIDTH / 6, (float)SCARFY_HEIGHT / 8 * 1};
     player.position = (Vector2){550.0f, GROUND_Y_POSITION - player.frameRec.height};
-    player.weapon = createSword();
+
+    player.hMoveVector = 0;
+    player.vMoveVector = 0;
+
     player.frameCounter = 0;
     player.standingFrameCounter = 0;
     player.attackFrameCounter = 0;
     player.moveRightFrameCounter = 0;
     player.moveLeftFrameCounter = 0;
-    player.hMoveVector = 0;
-    player.vMoveVector = 0;
+
     player.attackState = false;
     player.moveRightState = false;
     player.moveLeftState = false;
     player.jumpState = true;
+
+    player.weapon = createSword();
     player.weaponRanegePosition = (Vector2){player.position.x + abs((int)player.frameRec.width) / 2, player.position.y + player.frameRec.height - player.weapon.range.height + 10};
+
     return player;
 }
 
@@ -170,6 +176,90 @@ void attack(Player *player, Slime *slime)
         slimeTop(*slime) <= weaponRangeBot(*player))
     {
         slime->hittedState = true;
+    }
+}
+
+void updatePlayerFrame(Texture2D scarfy, Player *player)
+{
+    player->frameCounter++;
+    if (player->attackState && player->frameCounter >= (60 / 6))
+    {
+        // 공격하는 프레임 설정 ( 6 FPS )
+        //
+        player->frameCounter = 0;
+
+        player->frameRec.x = (float)player->attackFrameCounter * (float)scarfy.width / 6;
+        player->frameRec.y = scarfy.height / 8 * 3;
+
+        player->attackFrameCounter++;
+
+        if (!player->jumpState)
+            player->hMoveVector = 0;
+
+        if (player->attackFrameCounter >= NUM_ATTACK_FRAME)
+        {
+            player->attackFrameCounter = 0;
+            player->frameCounter = 30;
+            player->attackState = false;
+        }
+    }
+    else if (player->moveRightState && player->frameCounter >= (60 / 8))
+    {
+        // 오른쪽으로 이동하는 프레임 설정 ( 8 FPS )
+        //
+        player->frameCounter = 0;
+
+        player->frameRec.x = (float)player->moveRightFrameCounter * (float)scarfy.width / 6;
+        player->frameRec.y = scarfy.height / 8 * 0;
+
+        if (player->frameRec.width < 0)
+        {
+            // 캐릭터가 오른쪽을 보도록 지정
+            //
+            player->frameRec.width *= -1;
+        }
+
+        player->moveRightFrameCounter++;
+        if (player->moveRightFrameCounter > 5)
+        {
+            player->moveRightFrameCounter = 0;
+            player->frameCounter = 30;
+        }
+    }
+    else if (player->moveLeftState && player->frameCounter >= (60 / 8))
+    {
+        // 왼쪽으로 이동하는 프레임임 설정 ( 8 FPS )
+        //
+        player->frameCounter = 0;
+        player->frameRec.x = (float)player->moveLeftFrameCounter * (float)scarfy.width / 6;
+        player->frameRec.y = scarfy.height / 8 * 0;
+        if (player->frameRec.width > 0)
+        {
+            // 캐릭터가 왼쪽을 보도록 지정
+            //
+            player->frameRec.width *= -1;
+        }
+        player->moveLeftFrameCounter++;
+        if (player->moveLeftFrameCounter > 5)
+        {
+            player->moveLeftFrameCounter = 0;
+            player->frameCounter = 30;
+        }
+    }
+    else if (player->frameCounter >= (60 / 2))
+    {
+        // 서있는 프레임 설정 ( 2FPS )
+        //
+        player->frameCounter = 0;
+
+        player->frameRec.x = (float)player->standingFrameCounter * (float)scarfy.width / 6;
+        player->frameRec.y = scarfy.height / 8 * 1;
+
+        player->standingFrameCounter++;
+        if (player->standingFrameCounter >= NUM_STAND_FRAME)
+        {
+            player->standingFrameCounter = 0;
+        }
     }
 }
 // ----------------------------------------------------------------------
