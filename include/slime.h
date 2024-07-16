@@ -15,12 +15,12 @@ typedef struct Slime
 
 Slime createSlime();
 
-float calculateSlimeLeft(Slime slime);
+float slimeLeft(Slime slime);
 
-float calculateSlimeRight(Slime slime);
+float slimeRight(Slime slime);
 
-float calculateSlimeTop(Slime slime);
+float slimeTop(Slime slime);
 
-float calculateSlimeBot(Slime slime);
+float sliemBot(Slime slime);
 
 #endif

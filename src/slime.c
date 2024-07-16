@@ -25,22 +25,22 @@ Slime createSlime()
 
 // Utils
 // ----------------------------------------------------------------------
-float calculateSlimeLeft(Slime slime)
+float slimeLeft(Slime slime)
 {
     return slime.position.x;
 }
 
-float calculateSlimeRight(Slime slime)
+float slimeRight(Slime slime)
 {
     return slime.position.x + slime.frameRec.width;
 }
 
-float calculateSlimeTop(Slime slime)
+float slimeTop(Slime slime)
 {
     return slime.position.y;
 }
 
-float calculateSlimeBot(Slime slime)
+float sliemBot(Slime slime)
 {
     return slime.position.y + slime.frameRec.height;
 }
