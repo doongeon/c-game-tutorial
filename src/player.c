@@ -21,7 +21,6 @@ typedef struct Player
     int moveRightFrameCounter;
     int moveLeftFrameCounter;
 
-
     // States
     bool attackState;
     bool moveRightState;
@@ -50,15 +49,52 @@ Player createPlayer()
     player.moveRightState = false;
     player.moveLeftState = false;
     player.jumpState = true;
-
     player.weaponRanegePosition = (Vector2){player.position.x + abs((int)player.frameRec.width) / 2, player.position.y + player.frameRec.height - player.weapon.range.height + 10};
     return player;
 }
 
 // Utils
 // ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
+bool isWatchRight(Player player)
+{
+    bool result = player.frameRec.width > 0 ? true : false;
+    return result;
+}
 
+float weaponRangeLeft(Player player)
+{
+    if (isWatchRight(player))
+    {
+        return player.weaponRanegePosition.x;
+    }
+    else
+    {
+        return player.weaponRanegePosition.x - player.weapon.range.width;
+    }
+}
+
+float weaponRangeRight(Player player)
+{
+    if (isWatchRight(player))
+    {
+        return player.weaponRanegePosition.x + player.weapon.range.width;
+    }
+    else
+    {
+        return player.weaponRanegePosition.x;
+    }
+}
+
+float weaponRangeTop(Player player)
+{
+    return player.weaponRanegePosition.y;
+}
+
+float weaponRangeBot(Player player)
+{
+    return player.weaponRanegePosition.y + player.weaponRanegePosition.y;
+}
+// ----------------------------------------------------------------------
 
 // Update
 // ----------------------------------------------------------------------
@@ -96,17 +132,25 @@ void updatePlayerPosition(Player *player)
     player->position.x += player->hMoveVector;
     player->position.y += player->vMoveVector;
 
-    player->weaponRanegePosition = (Vector2){player->position.x + abs((int)player->frameRec.width) / 2, player->position.y + player->frameRec.height - player->weapon.range.height + 10};
+    player->weaponRanegePosition = (Vector2){
+        player->position.x + abs((int)player->frameRec.width) / 2,
+        player->position.y + player->frameRec.height - player->weapon.range.height + 10};
 }
 
 void moveLeft(Player *player)
 {
-    if (!player->attackState && !player->jumpState && !player->moveRightState)
+    if (
+        !player->attackState &&
+        !player->jumpState &&
+        !player->moveRightState)
     {
         setMoveLeftState(player);
         player->hMoveVector -= 0.5;
     }
-    if (!player->attackState && player->jumpState && !player->moveRightState)
+    if (
+        !player->attackState &&
+        player->jumpState &&
+        !player->moveRightState)
     {
         setMoveLeftState(player);
         player->hMoveVector -= 0.2;
@@ -119,27 +163,13 @@ void moveLeft(Player *player)
 
 void attack(Player *player, Slime *slime)
 {
-    if (player->frameRec.width > 0) // 플레이어가 오른쪽을 볼때
+    if (
+        slimeLeft(*slime) <= weaponRangeRight(*player) &&
+        slimeRight(*slime) >= weaponRangeLeft(*player) &&
+        slimeTop(*slime) >= weaponRangeTop(*player) &&
+        slimeTop(*slime) <= weaponRangeBot(*player))
     {
-        if (
-            slime->position.x + slime->frameRec.width >= player->weaponRanegePosition.x &&
-            slime->position.x <= player->weaponRanegePosition.x + player->weapon.range.width &&
-            slime->position.y >= player->weaponRanegePosition.y &&
-            slime->position.y <= player->weaponRanegePosition.y + player->weapon.range.height)
-        {
-            slime->hittedState = true;
-        }
-    }
-    else // 플레이어가 왼쪽을 볼때
-    {
-        if (
-            slime->position.x <= player->weaponRanegePosition.x &&
-            slime->position.x + slime->frameRec.width >= player->weaponRanegePosition.x - player->weapon.range.width &&
-            slime->position.y >= player->weaponRanegePosition.y &&
-            slime->position.y <= player->weaponRanegePosition.y + player->weapon.range.height)
-        {
-            slime->hittedState = true;
-        }
+        slime->hittedState = true;
     }
 }
 // ----------------------------------------------------------------------
@@ -148,8 +178,6 @@ void attack(Player *player, Slime *slime)
 // ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
-
-
 
 // Draw
 // ----------------------------------------------------------------------
@@ -178,4 +206,3 @@ void drawPlayerWeaponRange(Player player)
         RED);
 }
 // ----------------------------------------------------------------------
-
