@@ -4,50 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TEXTURE_FILE_PATH "/Users/donggeon/Documents/c-raylib/resources/character.png"
-
-#define NUM_WALKING_FRAME 6
-#define NUM_STAND_FRAME 4
-#define NUM_ATTACK_FRAME 4
-
-#define SCARFY_WIDTH 432
-#define SCARFY_HEIGHT 384
-
-#define GROUND_Y_POSITION 280.0f
-
-bool attackState = false;
-bool moveRightState = false;
-bool moveLeftState = false;
-bool jumpState = true;
-
-void setAttackState()
-{
-    if (!attackState)
-    {
-        attackState = true;
-        moveLeftState = false;
-        moveRightState = false;
-    }
-}
-
-void setJumpState()
-{
-    if (!jumpState && !attackState)
-        jumpState = true;
-}
-
-void setMoveLeftState()
-{
-    moveLeftState = true;
-    moveRightState = false;
-}
-
-void setMoveRightState()
-{
-    moveLeftState = false;
-    moveRightState = true;
-    ;
-}
+#include "constants.h"
+#include "circular_queue.h"
+#include "slime.h"
+#include "weapon.h"
+#include "player.h"
 
 Image GenerateGrassTexture(int width, int height)
 {
@@ -85,129 +46,15 @@ Image GenerateUnderGroundTexture(int width, int height)
 // ----------------------------------------------------------------------------------
 typedef struct DamageGUI
 {
+    Vector2 position;
     int frameCounter;
     int hitFrameCounter;
 } DamageGUI;
 
-typedef struct Weapon
+DamageGUI createDamageGUI(Slime *slime)
 {
-    char *name;
-    Rectangle range;
-} Weapon;
-
-Weapon createSword()
-{
-    Weapon result;
-    result.name = "sword";
-    result.range = (Rectangle){0, 0, 35, 47};
-    return result;
-};
-
-typedef struct Slime
-{
-    Vector2 position;
-    Rectangle frameRec;
-    Color color;
-    bool hittedState;
-    int frameCounter;
-    int hitFrameCounter;
-} Slime;
-
-Slime createSlime()
-{
-    Slime slime;
-    slime.frameRec = (Rectangle){0, 0, 20, 20};
-    slime.position = (Vector2){700, GROUND_Y_POSITION - slime.frameRec.height};
-    slime.color = VIOLET;
-    slime.hittedState = false;
-    slime.frameCounter = 0;
-    slime.hitFrameCounter = 0;
-    return slime;
-}
-
-typedef struct Player
-{
-    Vector2 position;
-    Rectangle frameRec;
-    Weapon weapon;
-    float hMoveVector;
-    float vMoveVector;
-    int frameCounter;
-    int standingFrameCounter;
-    int attackFrameCounter;
-    int moveRightFrameCounter;
-    int moveLeftFrameCounter;
-    Vector2 weaponRanegePosition;
-} Player;
-
-Player createPlayer()
-{
-    Player player;
-    player.frameRec = (Rectangle){0.0f, 0.0f, (float)SCARFY_WIDTH / 6, (float)SCARFY_HEIGHT / 8 * 1};
-    player.position = (Vector2){550.0f, GROUND_Y_POSITION - player.frameRec.height};
-    player.weapon = createSword();
-    player.frameCounter = 0;
-    player.standingFrameCounter = 0;
-    player.attackFrameCounter = 0;
-    player.moveRightFrameCounter = 0;
-    player.moveLeftFrameCounter = 0;
-    player.hMoveVector = 0;
-    player.vMoveVector = 0;
-    player.weaponRanegePosition = (Vector2){player.position.x + abs((int)player.frameRec.width) / 2, player.position.y + player.frameRec.height - player.weapon.range.height + 10};
-    return player;
-}
-
-void updatePlayerPosition(Player *player)
-{
-    player->position.x += player->hMoveVector;
-    player->position.y += player->vMoveVector;
-
-    player->weaponRanegePosition = (Vector2){player->position.x + abs((int)player->frameRec.width) / 2, player->position.y + player->frameRec.height - player->weapon.range.height + 10};
-}
-
-void moveLeft(Player *player)
-{
-    if (!attackState && !jumpState && !moveRightState)
-    {
-        setMoveLeftState();
-        player->hMoveVector -= 0.5;
-    }
-    if (!attackState && jumpState && !moveRightState)
-    {
-        setMoveLeftState();
-        player->hMoveVector -= 0.2;
-    }
-    if (player->hMoveVector < -2)
-    {
-        player->hMoveVector = -2;
-    }
-}
-
-void attack(Player *player, Slime *slime)
-{   
-    if (player->frameRec.width > 0) // 플레이어가 오른쪽을 볼때
-    {
-        if (
-            slime->position.x + slime->frameRec.width >= player->weaponRanegePosition.x &&
-            slime->position.x <= player->weaponRanegePosition.x + player->weapon.range.width &&
-            slime->position.y >= player->weaponRanegePosition.y &&
-            slime->position.y <= player->weaponRanegePosition.y + player->weapon.range.height)
-        {
-            slime->hittedState = true;
-        }
-    }
-    else // 플레이어가 왼쪽을 볼때
-    {   
-        if (
-            slime->position.x <= player->weaponRanegePosition.x &&
-            slime->position.x + slime->frameRec.width >= player->weaponRanegePosition.x - player->weapon.range.width &&
-            slime->position.y >= player->weaponRanegePosition.y &&
-            slime->position.y <= player->weaponRanegePosition.y + player->weapon.range.height
-        )
-        {
-            slime->hittedState = true;
-        }
-    }
+    DamageGUI damageGUI = {slime->position, 0, 0};
+    return damageGUI;
 }
 
 typedef struct EnvItem
@@ -246,6 +93,9 @@ int main(void)
         {{screenWidth / 2, GROUND_Y_POSITION - 30, 100, 30}, 1, GRAY}};
     int envItemsLength = sizeof(envItems) / sizeof(EnvItem);
 
+    CircularQueue damageQue;
+    initQueue(&damageQue);
+
     Image grassImage = GenerateGrassTexture(100, 10);
     Texture2D grassTexture = LoadTextureFromImage(grassImage);
     UnloadImage(grassImage);
@@ -283,37 +133,37 @@ int main(void)
         if (hitObstacle)
         {
             player.vMoveVector = 0;
-            jumpState = false;
+            player.jumpState = false;
         }
         else
         {
             player.vMoveVector += 1;
-            jumpState = true;
+            player.jumpState = true;
         }
 
         updatePlayerPosition(&player);
 
         if (IsKeyDown(KEY_A))
         {
-            setAttackState();
+            setAttackState(&player);
             attack(&player, &slime);
         }
         if (IsKeyDown(KEY_D))
         {
-            if (!jumpState && !attackState)
+            if (!player.jumpState && !player.attackState)
                 player.vMoveVector = -10;
-            setJumpState();
+            setJumpState(&player);
         }
         if (IsKeyDown(KEY_RIGHT))
         {
-            if (!attackState && !jumpState && !moveLeftState)
+            if (!player.attackState && !player.jumpState && !player.moveLeftState)
             {
-                setMoveRightState();
+                setMoveRightState(&player);
                 player.hMoveVector += 0.5;
             }
-            if (!attackState && jumpState && !moveLeftState)
+            if (!player.attackState && player.jumpState && !player.moveLeftState)
             {
-                setMoveRightState();
+                setMoveRightState(&player);
                 player.hMoveVector += 0.2;
             }
             if (player.hMoveVector > 2)
@@ -323,18 +173,18 @@ int main(void)
         }
         if (IsKeyUp(KEY_RIGHT))
         {
-            moveRightState = false;
+            player.moveRightState = false;
         }
         if (IsKeyDown(KEY_LEFT))
         {
-            if (!attackState && !jumpState && !moveRightState)
+            if (!player.attackState && !player.jumpState && !player.moveRightState)
             {
-                setMoveLeftState();
+                setMoveLeftState(&player);
                 player.hMoveVector -= 0.5;
             }
-            if (!attackState && jumpState && !moveRightState)
+            if (!player.attackState && player.jumpState && !player.moveRightState)
             {
-                setMoveLeftState();
+                setMoveLeftState(&player);
                 player.hMoveVector -= 0.2;
             }
             if (player.hMoveVector < -2)
@@ -344,10 +194,10 @@ int main(void)
         }
         if (IsKeyUp(KEY_LEFT))
         {
-            moveLeftState = false;
+            player.moveLeftState = false;
         }
 
-        if (!moveLeftState && !moveRightState && !jumpState)
+        if (!player.moveLeftState && !player.moveRightState && !player.jumpState)
         {
             if (player.hMoveVector > 0)
             {
@@ -374,7 +224,7 @@ int main(void)
         // Player
         //
         player.frameCounter++;
-        if (attackState && player.frameCounter >= (60 / 6))
+        if (player.attackState && player.frameCounter >= (60 / 6))
         {
             // 공격하는 프레임 설정 ( 6 FPS )
             //
@@ -385,17 +235,17 @@ int main(void)
 
             player.attackFrameCounter++;
 
-            if (!jumpState)
+            if (!player.jumpState)
                 player.hMoveVector = 0;
 
             if (player.attackFrameCounter >= NUM_ATTACK_FRAME)
             {
                 player.attackFrameCounter = 0;
                 player.frameCounter = 30;
-                attackState = false;
+                player.attackState = false;
             }
         }
-        else if (moveRightState && player.frameCounter >= (60 / 8))
+        else if (player.moveRightState && player.frameCounter >= (60 / 8))
         {
             // 오른쪽으로 이동하는 프레임 설정 ( 8 FPS )
             //
@@ -418,7 +268,7 @@ int main(void)
                 player.frameCounter = 30;
             }
         }
-        else if (moveLeftState && player.frameCounter >= (60 / 8))
+        else if (player.moveLeftState && player.frameCounter >= (60 / 8))
         {
             // 왼쪽으로 이동하는 프레임임 설정 ( 8 FPS )
             //
@@ -458,14 +308,14 @@ int main(void)
         // slime
         //
         slime.frameCounter++;
-        if(slime.frameCounter > 8)
+        if (slime.frameCounter > 8)
         {
             slime.frameCounter = 0;
 
-            if(slime.hittedState)
-            {   
+            if (slime.hittedState)
+            {
                 slime.hitFrameCounter++;
-                if(slime.hitFrameCounter > 5)
+                if (slime.hitFrameCounter > 5)
                 {
                     slime.hittedState = false;
                     slime.hitFrameCounter = 0;
@@ -542,31 +392,17 @@ int main(void)
             // 슬라임
             //
             DrawRectangle(slime.position.x, slime.position.y, slime.frameRec.width, slime.frameRec.height, slime.color);
-            if(slime.hittedState)
+            if (slime.hittedState)
             {
                 DrawText("hit", slime.position.x, slime.position.y - 20 - slime.hitFrameCounter * 3, 20, RED);
             }
-            
+
             // 플레이어
             //
-            DrawTextureRec(scarfy, player.frameRec, player.position, WHITE);
-            DrawRectangleLines(
-                player.position.x,
-                player.position.y,
-                abs((int)(player.frameRec.width)),
-                player.frameRec.height,
-                LIME);
-            
-
-            // 플레이어 공격 범위
+            drawPlayer(scarfy, player);
+            drawPlayerRec(player);
+            drawPlayerWeaponRange(player);
             //
-            DrawRectangleLines(
-                player.weaponRanegePosition.x,
-                player.weaponRanegePosition.y,
-                player.frameRec.width > 0 ? player.weapon.range.width : -player.weapon.range.width,
-                player.weapon.range.height,
-                RED);
-            
         }
         EndDrawing();
         //--------------------------------------------------------------------------
