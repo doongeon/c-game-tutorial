@@ -45,3 +45,12 @@ float sliemBot(Slime slime)
     return slime.position.y + slime.frameRec.height;
 }
 // ----------------------------------------------------------------------
+
+// Draw
+// ----------------------------------------------------------------------
+void drawSlime(Slime slime)
+{
+    DrawRectangle(slime.position.x, slime.position.y, slime.frameRec.width, slime.frameRec.height, slime.color);
+}
+// ----------------------------------------------------------------------
+

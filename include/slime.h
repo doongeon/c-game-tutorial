@@ -23,4 +23,6 @@ float slimeTop(Slime slime);
 
 float sliemBot(Slime slime);
 
+void drawSlime(Slime slime);
+
 #endif

@@ -391,7 +391,7 @@ int main(void)
 
             // 슬라임
             //
-            DrawRectangle(slime.position.x, slime.position.y, slime.frameRec.width, slime.frameRec.height, slime.color);
+            drawSlime(slime);
             if (slime.hittedState)
             {
                 DrawText("hit", slime.position.x, slime.position.y - 20 - slime.hitFrameCounter * 3, 20, RED);
