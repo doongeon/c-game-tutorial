@@ -102,15 +102,21 @@ typedef struct Slime
     Vector2 position;
     Rectangle frameRec;
     Color color;
+    bool hittedState;
+    int frameCounter;
+    int hitFrameCounter;
 } Slime;
 
 Slime createSlime()
 {
-    Slime result;
-    result.frameRec = (Rectangle){0, 0, 20, 20};
-    result.position = (Vector2){700, GROUND_Y_POSITION - result.frameRec.height};
-    result.color = VIOLET;
-    return result;
+    Slime slime;
+    slime.frameRec = (Rectangle){0, 0, 20, 20};
+    slime.position = (Vector2){700, GROUND_Y_POSITION - slime.frameRec.height};
+    slime.color = VIOLET;
+    slime.hittedState = false;
+    slime.frameCounter = 0;
+    slime.hitFrameCounter = 0;
+    return slime;
 }
 
 typedef struct Player
@@ -120,6 +126,7 @@ typedef struct Player
     Weapon weapon;
     float hMoveVector;
     float vMoveVector;
+    int frameCounter;
     int standingFrameCounter;
     int attackFrameCounter;
     int moveRightFrameCounter;
@@ -133,6 +140,7 @@ Player createPlayer()
     player.frameRec = (Rectangle){0.0f, 0.0f, (float)SCARFY_WIDTH / 6, (float)SCARFY_HEIGHT / 8 * 1};
     player.position = (Vector2){550.0f, GROUND_Y_POSITION - player.frameRec.height};
     player.weapon = createSword();
+    player.frameCounter = 0;
     player.standingFrameCounter = 0;
     player.attackFrameCounter = 0;
     player.moveRightFrameCounter = 0;
@@ -170,7 +178,7 @@ void moveLeft(Player *player)
 }
 
 void attack(Player *player, Slime *slime)
-{
+{   
     if (player->frameRec.width > 0) // 플레이어가 오른쪽을 볼때
     {
         if (
@@ -179,9 +187,7 @@ void attack(Player *player, Slime *slime)
             slime->position.y >= player->weaponRanegePosition.y &&
             slime->position.y <= player->weaponRanegePosition.y + player->weapon.range.height)
         {
-            BeginDrawing();
-            DrawText("hit", slime->position.x, slime->position.y - 30, 40, RED);
-            EndDrawing();
+            slime->hittedState = true;
         }
     }
     else // 플레이어가 왼쪽을 볼때
@@ -193,9 +199,7 @@ void attack(Player *player, Slime *slime)
             slime->position.y <= player->weaponRanegePosition.y + player->weapon.range.height
         )
         {
-            BeginDrawing();
-            DrawText("hit", slime->position.x, slime->position.y - 30, 40, RED);
-            EndDrawing();
+            slime->hittedState = true;
         }
     }
 }
@@ -236,8 +240,6 @@ int main(void)
         {{screenWidth / 2, GROUND_Y_POSITION - 30, 100, 30}, 1, GRAY}};
     int envItemsLength = sizeof(envItems) / sizeof(EnvItem);
 
-    int framesCounter = 0;
-
     Image grassImage = GenerateGrassTexture(100, 10);
     Texture2D grassTexture = LoadTextureFromImage(grassImage);
     UnloadImage(grassImage);
@@ -254,8 +256,6 @@ int main(void)
     {
         // Update
         //--------------------------------------------------------------------------
-        framesCounter++;
-
         bool hitObstacle = false;
 
         for (int i = 0; i < envItemsLength; i++)
@@ -284,9 +284,6 @@ int main(void)
             player.vMoveVector += 1;
             jumpState = true;
         }
-
-        // player.position.x += player.hMoveVector;
-        // player.position.y += player.vMoveVector;
 
         updatePlayerPosition(&player);
 
@@ -367,11 +364,15 @@ int main(void)
 
         // Set animating frame
         //
-        if (attackState && framesCounter >= (60 / 6))
+
+        // Player
+        //
+        player.frameCounter++;
+        if (attackState && player.frameCounter >= (60 / 6))
         {
             // 공격하는 프레임 설정 ( 6 FPS )
             //
-            framesCounter = 0;
+            player.frameCounter = 0;
 
             player.frameRec.x = (float)player.attackFrameCounter * (float)scarfy.width / 6;
             player.frameRec.y = scarfy.height / 8 * 3;
@@ -384,15 +385,15 @@ int main(void)
             if (player.attackFrameCounter >= NUM_ATTACK_FRAME)
             {
                 player.attackFrameCounter = 0;
-                framesCounter = 30;
+                player.frameCounter = 30;
                 attackState = false;
             }
         }
-        else if (moveRightState && framesCounter >= (60 / 8))
+        else if (moveRightState && player.frameCounter >= (60 / 8))
         {
             // 오른쪽으로 이동하는 프레임 설정 ( 8 FPS )
             //
-            framesCounter = 0;
+            player.frameCounter = 0;
 
             player.frameRec.x = (float)player.moveRightFrameCounter * (float)scarfy.width / 6;
             player.frameRec.y = scarfy.height / 8 * 0;
@@ -408,14 +409,14 @@ int main(void)
             if (player.moveRightFrameCounter > 5)
             {
                 player.moveRightFrameCounter = 0;
-                framesCounter = 30;
+                player.frameCounter = 30;
             }
         }
-        else if (moveLeftState && framesCounter >= (60 / 8))
+        else if (moveLeftState && player.frameCounter >= (60 / 8))
         {
             // 왼쪽으로 이동하는 프레임임 설정 ( 8 FPS )
             //
-            framesCounter = 0;
+            player.frameCounter = 0;
             player.frameRec.x = (float)player.moveLeftFrameCounter * (float)scarfy.width / 6;
             player.frameRec.y = scarfy.height / 8 * 0;
             if (player.frameRec.width > 0)
@@ -428,14 +429,14 @@ int main(void)
             if (player.moveLeftFrameCounter > 5)
             {
                 player.moveLeftFrameCounter = 0;
-                framesCounter = 30;
+                player.frameCounter = 30;
             }
         }
-        else if (framesCounter >= (60 / 2))
+        else if (player.frameCounter >= (60 / 2))
         {
             // 서있는 프레임 설정 ( 2FPS )
             //
-            framesCounter = 0;
+            player.frameCounter = 0;
 
             player.frameRec.x = (float)player.standingFrameCounter * (float)scarfy.width / 6;
             player.frameRec.y = scarfy.height / 8 * 1;
@@ -446,6 +447,27 @@ int main(void)
                 player.standingFrameCounter = 0;
             }
         }
+        //
+
+        // slime
+        //
+        slime.frameCounter++;
+        if(slime.frameCounter > 8)
+        {
+            slime.frameCounter = 0;
+
+            if(slime.hittedState)
+            {   
+                slime.hitFrameCounter++;
+                if(slime.hitFrameCounter > 5)
+                {
+                    slime.hittedState = false;
+                    slime.hitFrameCounter = 0;
+                }
+            }
+        }
+        //
+
         //--------------------------------------------------------------------------
 
         // Draw
@@ -514,27 +536,31 @@ int main(void)
             // 슬라임
             //
             DrawRectangle(slime.position.x, slime.position.y, slime.frameRec.width, slime.frameRec.height, slime.color);
-
+            if(slime.hittedState)
+            {
+                DrawText("hit", slime.position.x, slime.position.y - 20 - slime.hitFrameCounter * 3, 20, RED);
+            }
+            
             // 플레이어
             //
             DrawTextureRec(scarfy, player.frameRec, player.position, WHITE);
-            // DrawRectangleLines(
-            //     player.position.x,
-            //     player.position.y,
-            //     abs((int)(player.frameRec.width)),
-            //     player.frameRec.height,
-            //     LIME);
-            //
+            DrawRectangleLines(
+                player.position.x,
+                player.position.y,
+                abs((int)(player.frameRec.width)),
+                player.frameRec.height,
+                LIME);
+            
 
             // 플레이어 공격 범위
             //
-            // DrawRectangleLines(
-            //     player.weaponRanegePosition.x,
-            //     player.weaponRanegePosition.y,
-            //     player.frameRec.width > 0 ? player.weapon.range.width : -player.weapon.range.width,
-            //     player.weapon.range.height,
-            //     RED);
-            //
+            DrawRectangleLines(
+                player.weaponRanegePosition.x,
+                player.weaponRanegePosition.y,
+                player.frameRec.width > 0 ? player.weapon.range.width : -player.weapon.range.width,
+                player.weapon.range.height,
+                RED);
+            
         }
         EndDrawing();
         //--------------------------------------------------------------------------
