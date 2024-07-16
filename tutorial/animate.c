@@ -10,6 +10,9 @@
 #define NUM_STAND_FRAME 4
 #define NUM_ATTACK_FRAME 4
 
+#define SCARFY_WIDTH 432
+#define SCARFY_HEIGHT 384
+
 #define GROUND_Y_POSITION 280.0f
 
 bool attackState = false;
@@ -114,6 +117,7 @@ typedef struct Player
 {
     Vector2 position;
     Rectangle frameRec;
+    Weapon weapon;
     float hMoveVector;
     float vMoveVector;
     int standingFrameCounter;
@@ -121,6 +125,22 @@ typedef struct Player
     int moveRightFrameCounter;
     int moveLeftFrameCounter;
 } Player;
+
+Player createPlayer()
+{
+    Player result;
+    result.frameRec = (Rectangle){0.0f, 0.0f, (float)SCARFY_WIDTH / 6, (float)SCARFY_HEIGHT / 8 * 1};
+    result.position = (Vector2){550.0f, GROUND_Y_POSITION - result.frameRec.height};
+    result.weapon = createSword();
+    result.standingFrameCounter = 0;
+    result.attackFrameCounter = 0;
+    result.moveRightFrameCounter = 0;
+    result.moveLeftFrameCounter = 0;
+    result.hMoveVector = 0;
+    result.vMoveVector = 0;
+
+    return result;
+}
 
 typedef struct EnvItem
 {
@@ -149,23 +169,14 @@ int main(void)
         return -1; // Or handle the error as appropriate
     }
 
-    const float groundYPosition = 280.0f;
-    Player player;
-    player.position = (Vector2){550.0f, groundYPosition - 100};
-    player.frameRec = (Rectangle){0.0f, 0.0f, (float)scarfy.width / 6, (float)scarfy.height / 8 * 1};
-    player.standingFrameCounter = 0;
-    player.attackFrameCounter = 0;
-    player.moveRightFrameCounter = 0;
-    player.moveLeftFrameCounter = 0;
-    player.hMoveVector = 0;
-    player.vMoveVector = 0;
+    Player player = createPlayer();
 
     Slime slime = createSlime();
 
     EnvItem envItems[] = {
         {{0, 0, screenWidth, screenHeight}, 0, SKYBLUE},
-        {{0, groundYPosition, 1000, 200}, 1, GRAY},
-        {{screenWidth / 2, groundYPosition - 30, 100, 30}, 1, GRAY}};
+        {{0, GROUND_Y_POSITION, 1000, 200}, 1, GRAY},
+        {{screenWidth / 2, GROUND_Y_POSITION - 30, 100, 30}, 1, GRAY}};
     int envItemsLength = sizeof(envItems) / sizeof(EnvItem);
 
     int framesCounter = 0;
@@ -394,7 +405,7 @@ int main(void)
                 x += underGroundTexture.width)
             {
                 for (
-                    int y = groundYPosition + grassTexture.height;
+                    int y = GROUND_Y_POSITION + grassTexture.height;
                     y < screenHeight;
                     y += underGroundTexture.height)
                 {
@@ -406,7 +417,7 @@ int main(void)
                 x < screenWidth;
                 x += grassTexture.width)
             {
-                for (int y = groundYPosition; y < groundYPosition + 10; y += grassTexture.height)
+                for (int y = GROUND_Y_POSITION; y < GROUND_Y_POSITION + 10; y += grassTexture.height)
                 {
                     DrawTexture(grassTexture, x, y, WHITE);
                 }
