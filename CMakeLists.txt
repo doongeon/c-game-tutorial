@@ -11,6 +11,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 find_path(RL_INCLUDE_DIR raylib.h PATHS /opt/homebrew/opt/raylib/include)
 include_directories(${RL_INCLUDE_DIR})
 
+# include 디렉토리 추가
+include_directories(include)
+set(SRC_FILES src/circular_queue.c)
+
 # raylib 라이브러리 경로 찾기
 find_library(RL_LIBRARY raylib PATHS /opt/homebrew/opt/raylib/lib)
 
@@ -19,7 +23,7 @@ find_library(RL_LIBRARY raylib PATHS /opt/homebrew/opt/raylib/lib)
 # message("Raylib library: ${RL_LIBRARY}")
 
 # 실행 파일 생성
-add_executable(MyRaylibProject ./tutorial/animate.c)
+add_executable(MyRaylibProject ./test/main.c)
 
 # raylib 라이브러리와 링크
 target_link_libraries(MyRaylibProject ${RL_LIBRARY})
