@@ -90,48 +90,10 @@ int main(void)
                 player.vMoveVector = -10;
             setJumpState(&player);
         }
-        if (IsKeyDown(KEY_RIGHT))
-        {
-            if (!player.attackState && !player.jumpState && !player.moveLeftState)
-            {
-                setMoveRightState(&player);
-                player.hMoveVector += 0.5;
-            }
-            if (!player.attackState && player.jumpState && !player.moveLeftState)
-            {
-                setMoveRightState(&player);
-                player.hMoveVector += 0.2;
-            }
-            if (player.hMoveVector > 2)
-            {
-                player.hMoveVector = 2;
-            }
-        }
-        if (IsKeyUp(KEY_RIGHT))
-        {
-            player.moveRightState = false;
-        }
-        if (IsKeyDown(KEY_LEFT))
-        {
-            if (!player.attackState && !player.jumpState && !player.moveRightState)
-            {
-                setMoveLeftState(&player);
-                player.hMoveVector -= 0.5;
-            }
-            if (!player.attackState && player.jumpState && !player.moveRightState)
-            {
-                setMoveLeftState(&player);
-                player.hMoveVector -= 0.2;
-            }
-            if (player.hMoveVector < -2)
-            {
-                player.hMoveVector = -2;
-            }
-        }
-        if (IsKeyUp(KEY_LEFT))
-        {
-            player.moveLeftState = false;
-        }
+        if (IsKeyDown(KEY_RIGHT)) movePlayerRight(&player);
+        if (IsKeyUp(KEY_RIGHT)) player.moveRightState = false;
+        if (IsKeyDown(KEY_LEFT)) movePlayerLeft(&player);
+        if (IsKeyUp(KEY_LEFT)) player.moveLeftState = false;
 
         if (!player.moveLeftState && !player.moveRightState && !player.jumpState)
         {

@@ -54,7 +54,9 @@ void handleEnvitemCollisionY(Player *player, EnvItem *envItems, int envItemsLeng
 
 void handleEnvitemCollisionX(Player *player, EnvItem *envItems, int envItemsLength);
 
-void moveLeft(Player *player);
+void movePlayerLeft(Player *player);
+
+void movePlayerRight(Player *player);
 
 void attack(Player *player, Slime *slime, DamageNode **damage);
 

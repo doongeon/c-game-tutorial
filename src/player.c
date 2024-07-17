@@ -231,7 +231,7 @@ void handleEnvitemCollisionX(Player *player, EnvItem *envItems, int envItemsLeng
     }
 }
 
-void moveLeft(Player *player)
+void movePlayerLeft(Player *player)
 {
     if (
         !player->attackState &&
@@ -252,6 +252,24 @@ void moveLeft(Player *player)
     if (player->hMoveVector < -2)
     {
         player->hMoveVector = -2;
+    }
+}
+
+void movePlayerRight(Player *player)
+{
+    if (!player->attackState && !player->jumpState && !player->moveLeftState)
+    {
+        setMoveRightState(player);
+        player->hMoveVector += 0.5;
+    }
+    if (!player->attackState && player->jumpState && !player->moveLeftState)
+    {
+        setMoveRightState(player);
+        player->hMoveVector += 0.2;
+    }
+    if (player->hMoveVector > 2)
+    {
+        player->hMoveVector = 2;
     }
 }
 
