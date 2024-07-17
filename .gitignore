@@ -1,5 +1,7 @@
 raylib
 build
+tutorial
+city-view
 
 *.html
 *.wasm
