@@ -11,50 +11,8 @@
 #include "player.h"
 #include "damage.h"
 #include "linked_damage_list.h"
-
-Image GenerateGrassTexture(int width, int height)
-{
-    Image image = GenImageColor(width, height, DARKGREEN);
-
-    for (int y = 0; y < height; y += 2)
-    {
-        for (int x = 0; x < width; x += 2)
-        {
-            Color color = (GetRandomValue(0, 1) == 0) ? GREEN : DARKGREEN;
-            ImageDrawPixel(&image, x, y, color);
-        }
-    }
-
-    return image;
-}
-
-Image GenerateUnderGroundTexture(int width, int height)
-{
-    Image image = GenImageColor(width, height, DARKBROWN);
-
-    for (int y = 0; y < height; y += 2)
-    {
-        for (int x = 0; x < width; x += 2)
-        {
-            Color color = (GetRandomValue(0, 1) == 0) ? DARKBROWN : BROWN;
-            ImageDrawPixel(&image, x, y, color);
-        }
-    }
-
-    return image;
-}
-
-// Game assets
-// ----------------------------------------------------------------------------------
-typedef struct EnvItem
-{
-    Rectangle rect;
-    bool blockX;
-    bool blockY;
-    char *name;
-    Color color;
-} EnvItem;
-// ----------------------------------------------------------------------------------
+#include "env_item.h"
+#include "texture.h"
 
 int main(void)
 {
@@ -81,19 +39,39 @@ int main(void)
     Damage damages[255];
 
     EnvItem envItems[] = {
-        {{0, 0, screenWidth, screenHeight}, 0, 0, "background", SKYBLUE},
-        {{0, GROUND_Y_POSITION, 1000, 200}, 0, 1, "ground", GRAY},
-        {{screenWidth / 2, GROUND_Y_POSITION - 30, 100, 30}, 0, 1, "hill", GRAY},
-        {{screenWidth / 2 - 100, GROUND_Y_POSITION - 30, 30, 30}, 0, 1, "fence", GRAY}};
+        createEnvItem(
+            "background",
+            (Vector2){0, 0},
+            screenWidth / ENVITEM_WIDTH_UNIT + 1,
+            screenHeight / ENVITEM_HEIGHT_UNIT + 1,
+            0, 0
+        ),
+        createEnvItem(
+            "ground",
+            (Vector2){0, GROUND_Y_POSITION},
+            screenWidth / ENVITEM_WIDTH_UNIT + 1,
+            (screenHeight - GROUND_Y_POSITION) / ENVITEM_HEIGHT_UNIT + 1,
+            0, 1
+        ),
+        createEnvItem(
+            "hill",
+            (Vector2){500, GROUND_Y_POSITION - ENVITEM_HEIGHT_UNIT},
+            3,
+            1,
+            0, 1
+        ),
+        createEnvItem(
+            "fence",
+            (Vector2){300, GROUND_Y_POSITION - ENVITEM_HEIGHT_UNIT},
+            1,
+            2,
+            1, 1
+        ),
+    };
     int envItemsLength = sizeof(envItems) / sizeof(EnvItem);
 
-    Image grassImage = GenerateGrassTexture(100, 10);
-    Texture2D grassTexture = LoadTextureFromImage(grassImage);
-    UnloadImage(grassImage);
-
-    Image underGroundImage = GenerateUnderGroundTexture(10, 10);
-    Texture2D underGroundTexture = LoadTextureFromImage(underGroundImage);
-    UnloadImage(underGroundImage);
+    Texture2D grassTexture = getGrassTexture();
+    Texture2D dirtTexture = getDirtTexture();
 
     SetTargetFPS(60);
     //------------------------------------------------------------------------------
@@ -103,7 +81,7 @@ int main(void)
     {
         // Update
         //--------------------------------------------------------------------------
-        bool hitObstacle = false;
+        bool hitObstacleY = false;
 
         for (int i = 0; i < envItemsLength; i++)
         {
@@ -116,12 +94,12 @@ int main(void)
                 ei->rect.y >= p->position.y + p->frameRec.height - 3 &&
                 ei->rect.y <= p->position.y + p->frameRec.height - 3 + player.vMoveVector)
             {
-                hitObstacle = true;
-                if (hitObstacle)
+                hitObstacleY = true;
+                if (hitObstacleY)
                     break;
             }
         }
-        if (hitObstacle)
+        if (hitObstacleY)
         {
             player.vMoveVector = 0;
             player.jumpState = false;
@@ -220,76 +198,23 @@ int main(void)
         //--------------------------------------------------------------------------
         BeginDrawing();
         {
-            ClearBackground(WHITE);
+            ClearBackground(SKYBLUE);
 
             // map
             //
-            for (int i = 0; i < envItemsLength; i++) // 블럭
-                DrawRectangleRec(envItems[i].rect, envItems[i].color);
+            // for (int i = 0; i < envItemsLength; i++) // 블럭
+            //     DrawRectangleRec(envItems[i].rect, envItems[i].color);
 
-            for ( // 땅 흙 텍스쳐
-                int x = 0;
-                x < screenWidth;
-                x += underGroundTexture.width)
-            {
-                for (
-                    int y = GROUND_Y_POSITION + grassTexture.height;
-                    y < screenHeight;
-                    y += underGroundTexture.height)
-                {
-                    DrawTexture(underGroundTexture, x, y, WHITE);
-                }
-            }
-            for ( // 땅 잔디 텍스쳐
-                int x = 0;
-                x < screenWidth;
-                x += grassTexture.width)
-            {
-                for (int y = GROUND_Y_POSITION; y < GROUND_Y_POSITION + 10; y += grassTexture.height)
-                {
-                    DrawTexture(grassTexture, x, y, WHITE);
-                }
-            }
-
-            for ( // 언덕 흙 텍스쳐
-                int x = envItems[2].rect.x;
-                x < envItems[2].rect.x + envItems[2].rect.width;
-                x += underGroundTexture.width)
-            {
-                for (
-                    int y = envItems[2].rect.y + grassTexture.height;
-                    y < envItems[2].rect.y + envItems[2].rect.height;
-                    y += underGroundTexture.height)
-                {
-                    DrawTexture(underGroundTexture, x, y, WHITE);
-                }
-            }
-            for ( // 언덕 잔지 텍스쳐
-                int x = envItems[2].rect.x;
-                x < envItems[2].rect.x + envItems[2].rect.width;
-                x += grassTexture.width)
-            {
-                for (
-                    int y = envItems[2].rect.y;
-                    y < envItems[2].rect.y + 10;
-                    y += grassTexture.height)
-                {
-                    DrawTexture(grassTexture, x, y, WHITE);
-                }
-            }
-            //
+            drawGrassFieldTexture(envItems[1], grassTexture, dirtTexture);
+            drawGrassFieldTexture(envItems[2], grassTexture, dirtTexture);
+            drawGrassFieldTexture(envItems[3], grassTexture, dirtTexture);
 
             drawSlime(&slime); // 슬라임
 
-            if (!isDamageListEmpty(&damageList))
+            if (!isDamageListEmpty(&damageList)) // 데미지
             {
                 drawDamages(&damageList);
             }
-
-            // if (!isDamageExpired(damage)) // 데미지
-            // {
-            //     drawDamage(&damage);
-            // }
 
             drawPlayer(scarfy, player); // 플레이어
             // drawPlayerRec(player);
