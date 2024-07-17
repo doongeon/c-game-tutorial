@@ -79,6 +79,10 @@ int main(void)
         updatePlayerPosition(&player);
         removeExpiredNode(&damageList);
 
+        slimeRandomWalk(&slime);
+        updateSlimePosition(&slime);
+
+
         if (IsKeyDown(KEY_A))
         {
             setAttackState(&player);
