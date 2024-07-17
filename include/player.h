@@ -31,6 +31,14 @@ typedef struct Player
 
 Player createPlayer();
 
+float playerRight(Player player);
+
+float playerLeft(Player player);
+
+float playerTop(Player player);
+
+float playerBot(Player player);
+
 void setAttackState(Player *player);
 
 void setJumpState(Player *player);

@@ -35,9 +35,6 @@ int main(void)
     Player player = createPlayer();
     Slime slime = createSlime();
     DamageNode *damageList = initializeList();
-    Damage damage = (Damage){{0, 0}, 0, 0};
-    Damage damages[255];
-
     EnvItem envItems[] = {
         createEnvItem(
             "background",
@@ -82,17 +79,16 @@ int main(void)
         // Update
         //--------------------------------------------------------------------------
         bool hitObstacleY = false;
-
         for (int i = 0; i < envItemsLength; i++)
         {
             EnvItem *ei = envItems + i;
             Player *p = &player;
             if (
                 ei->blockY &&
-                ei->rect.x <= p->position.x + abs((int)(p->frameRec.width)) - 30 &&
-                ei->rect.x + ei->rect.width >= p->position.x + 30 &&
-                ei->rect.y >= p->position.y + p->frameRec.height - 3 &&
-                ei->rect.y <= p->position.y + p->frameRec.height - 3 + player.vMoveVector)
+                ei->rect.x <= playerRight(*p) &&
+                ei->rect.x + ei->rect.width >= playerLeft(*p) &&
+                ei->rect.y >= playerBot(*p) &&
+                ei->rect.y <= playerBot(*p) + player.vMoveVector)
             {
                 hitObstacleY = true;
                 if (hitObstacleY)
@@ -111,7 +107,6 @@ int main(void)
         }
 
         updatePlayerPosition(&player);
-
         removeExpiredNode(&damageList);
 
         if (IsKeyDown(KEY_A))
