@@ -175,7 +175,9 @@ void attack(Player *player, Slime *slime, DamageNode **damageList)
         slimeLeft(*slime) <= weaponRangeRight(*player) &&
         slimeRight(*slime) >= weaponRangeLeft(*player) &&
         slimeTop(*slime) >= weaponRangeTop(*player) &&
-        slimeTop(*slime) <= weaponRangeBot(*player))
+        slimeTop(*slime) <= weaponRangeBot(*player) &&
+        player->attackFrameCounter == 1 &&
+        player->frameCounter == 0)
     {
         slime->hittedState = true;
         append(damageList, createDamage(*slime));
@@ -185,9 +187,9 @@ void attack(Player *player, Slime *slime, DamageNode **damageList)
 void updatePlayerFrame(Texture2D scarfy, Player *player)
 {
     player->frameCounter++;
-    if (player->attackState && player->frameCounter >= (60 / 6))
+    if (player->attackState && player->frameCounter >= (60 / 20))
     {
-        // 공격하는 프레임 설정 ( 6 FPS )
+        // 공격하는 프레임 설정 ( 20 FPS )
         //
         player->frameCounter = 0;
 
