@@ -7,6 +7,10 @@
 #include "damage.h"
 #include "linked_damage_list.h"
 
+#define PLAYER_WIDTH 13
+#define PLAYER_HEIGHT 30
+
+
 typedef struct Player
 {
     Vector2 position;
@@ -67,6 +71,26 @@ bool isWatchRight(Player player)
 {
     bool result = player.frameRec.width > 0 ? true : false;
     return result;
+}
+
+float playerRight(Player player)
+{
+    return player.position.x + abs((int)(player.frameRec.width)) - 30;
+}
+
+float playerLeft(Player player)
+{
+    return player.position.x + 30;
+}
+
+float playerTop(Player player)
+{
+    return player.position.y + 16;
+}
+
+float playerBot(Player player)
+{
+    return player.position.y + player.frameRec.height - 3;
 }
 
 float weaponRangeLeft(Player player)
@@ -284,10 +308,10 @@ void drawPlayer(Texture2D scarfy, Player player)
 void drawPlayerRec(Player player)
 {
     DrawRectangleLines(
-        player.position.x,
-        player.position.y,
-        abs((int)(player.frameRec.width)),
-        player.frameRec.height,
+        playerLeft(player),
+        playerTop(player),
+        PLAYER_WIDTH,
+        PLAYER_HEIGHT,
         LIME);
 }
 
