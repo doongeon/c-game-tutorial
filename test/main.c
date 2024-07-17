@@ -10,6 +10,7 @@
 #include "weapon.h"
 #include "player.h"
 #include "damage.h"
+#include "linked_damage_list.h"
 
 Image GenerateGrassTexture(int width, int height)
 {
@@ -73,7 +74,9 @@ int main(void)
 
     Player player = createPlayer();
     Slime slime = createSlime();
+    DamageNode *damageList = initializeList();
     Damage damage = (Damage){{0, 0}, 0, 0};
+    Damage damages[255];
 
     EnvItem envItems[] = {
         {{0, 0, screenWidth, screenHeight}, 0, SKYBLUE},
