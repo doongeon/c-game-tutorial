@@ -45,19 +45,6 @@ Image GenerateUnderGroundTexture(int width, int height)
 
 // Game assets
 // ----------------------------------------------------------------------------------
-// typedef struct DamageGUI
-// {
-//     Vector2 position;
-//     int frameCounter;
-//     int hitFrameCounter;
-// } DamageGUI;
-
-// DamageGUI createDamageGUI(Slime *slime)
-// {
-//     DamageGUI damageGUI = {slime->position, 0, 0};
-//     return damageGUI;
-// }
-
 typedef struct EnvItem
 {
     Rectangle rect;
@@ -286,15 +273,10 @@ int main(void)
 
             drawSlime(&slime); // 슬라임
 
-            if (!isDamageExpired(damage))
+            if (!isDamageExpired(damage)) // 데미지
             {
                 drawDamage(&damage);
             }
-            // if (slime.hittedState)
-            // {
-            //     DrawText("hit", slime.position.x, slime.position.y - 20 - slime.hitFrameCounter * 3, 20, RED);
-            // }
-            //
 
             drawPlayer(scarfy, player); // 플레이어
             // drawPlayerRec(player);
