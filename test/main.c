@@ -219,25 +219,6 @@ int main(void)
         // Set animating frame
         //
         updatePlayerFrame(scarfy, &player); // Player
-
-        // slime
-        //
-        slime.frameCounter++;
-        if (slime.frameCounter > 8)
-        {
-            slime.frameCounter = 0;
-
-            if (slime.hittedState)
-            {
-                slime.hitFrameCounter++;
-                if (slime.hitFrameCounter > 5)
-                {
-                    slime.hittedState = false;
-                    slime.hitFrameCounter = 0;
-                }
-            }
-        }
-        //
         //--------------------------------------------------------------------------
 
         // Draw
@@ -303,7 +284,7 @@ int main(void)
             }
             //
 
-            drawSlime(slime); // 슬라임
+            drawSlime(&slime); // 슬라임
 
             if (!isDamageExpired(damage))
             {

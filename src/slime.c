@@ -49,9 +49,25 @@ float sliemBot(Slime slime)
 
 // Draw
 // ----------------------------------------------------------------------
-void drawSlime(Slime slime)
+void drawSlime(Slime *slime)
 {
-    DrawRectangle(slime.position.x, slime.position.y, slime.frameRec.width, slime.frameRec.height, slime.color);
+    slime->frameCounter++;
+    if (slime->frameCounter > 8)
+    {
+        slime->frameCounter = 0;
+
+        if (slime->hittedState)
+        {
+            slime->hitFrameCounter++;
+            if (slime->hitFrameCounter > 5)
+            {
+                slime->hittedState = false;
+                slime->hitFrameCounter = 0;
+            }
+        }
+    }
+
+    DrawRectangle(slime->position.x, slime->position.y, slime->frameRec.width, slime->frameRec.height, slime->color);
 }
 // ----------------------------------------------------------------------
 
