@@ -51,6 +51,7 @@ typedef struct EnvItem
     Rectangle rect;
     bool blockX;
     bool blockY;
+    char *name;
     Color color;
 } EnvItem;
 // ----------------------------------------------------------------------------------
@@ -80,10 +81,10 @@ int main(void)
     Damage damages[255];
 
     EnvItem envItems[] = {
-        {{0, 0, screenWidth, screenHeight}, 0, 0, SKYBLUE},
-        {{0, GROUND_Y_POSITION, 1000, 200}, 0, 1, GRAY},
-        {{screenWidth / 2, GROUND_Y_POSITION - 30, 100, 30}, 0, 1, GRAY},
-        {{screenWidth / 2 - 100, GROUND_Y_POSITION - 30, 30, 30}, 0, 1, GRAY}};
+        {{0, 0, screenWidth, screenHeight}, 0, 0, "background", SKYBLUE},
+        {{0, GROUND_Y_POSITION, 1000, 200}, 0, 1, "ground", GRAY},
+        {{screenWidth / 2, GROUND_Y_POSITION - 30, 100, 30}, 0, 1, "hill", GRAY},
+        {{screenWidth / 2 - 100, GROUND_Y_POSITION - 30, 30, 30}, 0, 1, "fence", GRAY}};
     int envItemsLength = sizeof(envItems) / sizeof(EnvItem);
 
     Image grassImage = GenerateGrassTexture(100, 10);
@@ -280,7 +281,7 @@ int main(void)
 
             drawSlime(&slime); // 슬라임
 
-            if(!isDamageListEmpty(&damageList))
+            if (!isDamageListEmpty(&damageList))
             {
                 drawDamages(&damageList);
             }
