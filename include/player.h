@@ -4,6 +4,7 @@
 #include "slime.h"
 #include "weapon.h"
 #include "damage.h"
+#include "env_item.h"
 #include "linked_damage_list.h"
 
 typedef struct Player
@@ -48,6 +49,10 @@ void setMoveLeftState(Player *player);
 void setMoveRightState(Player *player);
 
 void updatePlayerPosition(Player *player);
+
+void handleEnvitemCollisionY(Player *player, EnvItem *envItems, int envItemsLength);
+
+void handleEnvitemCollisionX(Player *player, EnvItem *envItems, int envItemsLength);
 
 void moveLeft(Player *player);
 

@@ -6,6 +6,7 @@
 #include "slime.h"
 #include "damage.h"
 #include "linked_damage_list.h"
+#include "env_item.h"
 
 #define PLAYER_WIDTH 13
 #define PLAYER_HEIGHT 30
@@ -64,6 +65,10 @@ Player createPlayer()
 
     return player;
 }
+
+
+
+
 
 // Utils
 // ----------------------------------------------------------------------
@@ -128,6 +133,10 @@ float weaponRangeBot(Player player)
 }
 // ----------------------------------------------------------------------
 
+
+
+
+
 // Update
 // ----------------------------------------------------------------------
 void setAttackState(Player *player)
@@ -167,6 +176,59 @@ void updatePlayerPosition(Player *player)
     player->weaponRanegePosition = (Vector2){
         player->position.x + abs((int)player->frameRec.width) / 2,
         player->position.y + player->frameRec.height - player->weapon.range.height + 10};
+}
+
+void handleEnvitemCollisionY(Player *player, EnvItem *envItems, int envItemsLength)
+{
+    bool hitObstacle = false;
+    for (int i = 0; i < envItemsLength; i++)
+    {
+        EnvItem *ei = envItems + i;
+        if (
+            ei->blockY &&
+            envItemLeft(*ei) <= playerRight(*player) &&
+            envItemRight(*ei) >= playerLeft(*player) &&
+            envItemTop(*ei) >= playerBot(*player) &&
+            envItemTop(*ei) <= playerBot(*player) + player->vMoveVector)
+        {
+            hitObstacle = true;
+            if (hitObstacle)
+                break;
+        }
+    }
+    if (hitObstacle)
+    {
+        player->vMoveVector = 0;
+        player->jumpState = false;
+    }
+    else
+    {
+        player->vMoveVector += 1; // 중력처럼 작용
+        player->jumpState = true;
+    }
+}
+
+void handleEnvitemCollisionX(Player *player, EnvItem *envItems, int envItemsLength)
+{
+    bool hitObstacle = false;
+    for (int i = 0; i < envItemsLength; i++)
+    {
+        EnvItem *ei = envItems + i;
+        if (
+            ei->blockX &&
+            envItemLeft(*ei) <= playerRight(*player) + player->hMoveVector &&
+            envItemRight(*ei) >= playerLeft(*player) + player->hMoveVector &&
+            envItemTop(*ei) < playerBot(*player) &&
+            envItemBot(*ei) > playerTop(*player))
+        {
+            hitObstacle = true;
+            if (hitObstacle)
+            {
+                player->hMoveVector = 0;
+                break;
+            }
+        }
+    }
 }
 
 void moveLeft(Player *player)
@@ -293,10 +355,18 @@ void updatePlayerFrame(Texture2D scarfy, Player *player)
 }
 // ----------------------------------------------------------------------
 
+
+
+
+
 // Control
 // ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
+
+
+
+
 
 // Draw
 // ----------------------------------------------------------------------

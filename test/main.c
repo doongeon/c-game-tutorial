@@ -41,29 +41,25 @@ int main(void)
             (Vector2){0, 0},
             screenWidth / ENVITEM_WIDTH_UNIT + 1,
             screenHeight / ENVITEM_HEIGHT_UNIT + 1,
-            0, 0
-        ),
+            0, 0),
         createEnvItem(
             "ground",
             (Vector2){0, GROUND_Y_POSITION},
             screenWidth / ENVITEM_WIDTH_UNIT + 1,
             (screenHeight - GROUND_Y_POSITION) / ENVITEM_HEIGHT_UNIT + 1,
-            0, 1
-        ),
+            0, 1),
         createEnvItem(
             "hill",
             (Vector2){500, GROUND_Y_POSITION - ENVITEM_HEIGHT_UNIT},
             3,
             1,
-            0, 1
-        ),
+            0, 1),
         createEnvItem(
             "fence",
             (Vector2){300, GROUND_Y_POSITION - ENVITEM_HEIGHT_UNIT},
             1,
             2,
-            1, 1
-        ),
+            1, 1),
     };
     int envItemsLength = sizeof(envItems) / sizeof(EnvItem);
 
@@ -78,34 +74,8 @@ int main(void)
     {
         // Update
         //--------------------------------------------------------------------------
-        bool hitObstacleY = false;
-        for (int i = 0; i < envItemsLength; i++)
-        {
-            EnvItem *ei = envItems + i;
-            Player *p = &player;
-            if (
-                ei->blockY &&
-                envItemLeft(*ei) <= playerRight(*p) &&
-                envItemRight(*ei) >= playerLeft(*p) &&
-                envItemTop(*ei) >= playerBot(*p) &&
-                envItemTop(*ei) <= playerBot(*p) + player.vMoveVector)
-            {
-                hitObstacleY = true;
-                if (hitObstacleY)
-                    break;
-            }
-        }
-        if (hitObstacleY)
-        {
-            player.vMoveVector = 0;
-            player.jumpState = false;
-        }
-        else
-        {
-            player.vMoveVector += 1; // 중력처럼 작용
-            player.jumpState = true;
-        }
-
+        handleEnvitemCollisionY(&player, envItems, envItemsLength);
+        handleEnvitemCollisionX(&player, envItems, envItemsLength);
         updatePlayerPosition(&player);
         removeExpiredNode(&damageList);
 
