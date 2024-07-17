@@ -15,8 +15,8 @@ void append(DamageNode **head, Damage newData);
 
 void deleteNode(DamageNode **head, int position);
 
+void removeExpiredNode(DamageNode **head);
+
 void drawDamages(DamageNode *node);
-
-
 
 #endif
