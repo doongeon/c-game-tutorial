@@ -9,6 +9,7 @@
 #include "slime.h"
 #include "weapon.h"
 #include "player.h"
+#include "damage.h"
 
 Image GenerateGrassTexture(int width, int height)
 {
@@ -44,18 +45,18 @@ Image GenerateUnderGroundTexture(int width, int height)
 
 // Game assets
 // ----------------------------------------------------------------------------------
-typedef struct DamageGUI
-{
-    Vector2 position;
-    int frameCounter;
-    int hitFrameCounter;
-} DamageGUI;
+// typedef struct DamageGUI
+// {
+//     Vector2 position;
+//     int frameCounter;
+//     int hitFrameCounter;
+// } DamageGUI;
 
-DamageGUI createDamageGUI(Slime *slime)
-{
-    DamageGUI damageGUI = {slime->position, 0, 0};
-    return damageGUI;
-}
+// DamageGUI createDamageGUI(Slime *slime)
+// {
+//     DamageGUI damageGUI = {slime->position, 0, 0};
+//     return damageGUI;
+// }
 
 typedef struct EnvItem
 {
@@ -85,14 +86,13 @@ int main(void)
 
     Player player = createPlayer();
     Slime slime = createSlime();
+    Damage damage = (Damage){{0, 0}, 0, 0};
+
     EnvItem envItems[] = {
         {{0, 0, screenWidth, screenHeight}, 0, SKYBLUE},
         {{0, GROUND_Y_POSITION, 1000, 200}, 1, GRAY},
         {{screenWidth / 2, GROUND_Y_POSITION - 30, 100, 30}, 1, GRAY}};
     int envItemsLength = sizeof(envItems) / sizeof(EnvItem);
-
-    CircularQueue damageQue;
-    initQueue(&damageQue);
 
     Image grassImage = GenerateGrassTexture(100, 10);
     Texture2D grassTexture = LoadTextureFromImage(grassImage);
@@ -144,7 +144,7 @@ int main(void)
         if (IsKeyDown(KEY_A))
         {
             setAttackState(&player);
-            attack(&player, &slime);
+            attack(&player, &slime, &damage);
         }
         if (IsKeyDown(KEY_D))
         {
@@ -218,11 +218,7 @@ int main(void)
 
         // Set animating frame
         //
-
-        // Player
-        //
-        updatePlayerFrame(scarfy, &player);
-        //
+        updatePlayerFrame(scarfy, &player); // Player
 
         // slime
         //
@@ -242,7 +238,6 @@ int main(void)
             }
         }
         //
-
         //--------------------------------------------------------------------------
 
         // Draw
@@ -308,19 +303,21 @@ int main(void)
             }
             //
 
-            // 슬라임
-            //
-            drawSlime(slime);
-            if (slime.hittedState)
-            {
-                DrawText("hit", slime.position.x, slime.position.y - 20 - slime.hitFrameCounter * 3, 20, RED);
-            }
+            drawSlime(slime); // 슬라임
 
-            // 플레이어
+            if (!isDamageExpired(damage))
+            {
+                drawDamage(&damage);
+            }
+            // if (slime.hittedState)
+            // {
+            //     DrawText("hit", slime.position.x, slime.position.y - 20 - slime.hitFrameCounter * 3, 20, RED);
+            // }
             //
-            drawPlayer(scarfy, player);
-            drawPlayerRec(player);
-            drawPlayerWeaponRange(player);
+
+            drawPlayer(scarfy, player); // 플레이어
+            // drawPlayerRec(player);
+            // drawPlayerWeaponRange(player);
             //
         }
         EndDrawing();

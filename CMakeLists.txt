@@ -15,7 +15,7 @@ include_directories(${RL_INCLUDE_DIR})
 include_directories(include)
 
 # src 디렉토리의 소스 파일들을 변수에 저장
-set(SRC_FILES src/circular_queue.c src/player.c src/slime.c src/weapon.c)
+set(SRC_FILES src/circular_queue.c src/player.c src/slime.c src/weapon.c src/damage.c)
 
 
 # raylib 라이브러리 경로 찾기

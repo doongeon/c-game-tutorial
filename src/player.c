@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "weapon.h"
 #include "slime.h"
+#include "damage.h"
 
 typedef struct Player
 {
@@ -167,7 +168,7 @@ void moveLeft(Player *player)
     }
 }
 
-void attack(Player *player, Slime *slime)
+void attack(Player *player, Slime *slime, Damage *damage)
 {
     if (
         slimeLeft(*slime) <= weaponRangeRight(*player) &&
@@ -176,6 +177,7 @@ void attack(Player *player, Slime *slime)
         slimeTop(*slime) <= weaponRangeBot(*player))
     {
         slime->hittedState = true;
+        *damage = createDamage(*slime);
     }
 }
 

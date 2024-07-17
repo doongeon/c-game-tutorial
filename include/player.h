@@ -3,6 +3,7 @@
 
 #include "slime.h"
 #include "weapon.h"
+#include "damage.h"
 
 typedef struct Player
 {
@@ -41,7 +42,7 @@ void updatePlayerPosition(Player *player);
 
 void moveLeft(Player *player);
 
-void attack(Player *player, Slime *slime);
+void attack(Player *player, Slime *slime, Damage *damage);
 
 void updatePlayerFrame(Texture2D scarfy, Player *player);
 
