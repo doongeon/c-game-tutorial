@@ -5,6 +5,7 @@
 #include "weapon.h"
 #include "slime.h"
 #include "damage.h"
+#include "linked_damage_list.h"
 
 typedef struct Player
 {
@@ -168,7 +169,7 @@ void moveLeft(Player *player)
     }
 }
 
-void attack(Player *player, Slime *slime, Damage *damage)
+void attack(Player *player, Slime *slime, DamageNode **damageList)
 {
     if (
         slimeLeft(*slime) <= weaponRangeRight(*player) &&
@@ -177,7 +178,7 @@ void attack(Player *player, Slime *slime, Damage *damage)
         slimeTop(*slime) <= weaponRangeBot(*player))
     {
         slime->hittedState = true;
-        *damage = createDamage(*slime);
+        append(damageList, createDamage(*slime));
     }
 }
 

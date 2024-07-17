@@ -131,10 +131,12 @@ int main(void)
 
         updatePlayerPosition(&player);
 
+        removeExpiredNode(&damageList);
+
         if (IsKeyDown(KEY_A))
         {
             setAttackState(&player);
-            attack(&player, &slime, &damage);
+            attack(&player, &slime, &damageList);
         }
         if (IsKeyDown(KEY_D))
         {
@@ -276,10 +278,15 @@ int main(void)
 
             drawSlime(&slime); // 슬라임
 
-            if (!isDamageExpired(damage)) // 데미지
+            if(!isDamageListEmpty(&damageList))
             {
-                drawDamage(&damage);
+                drawDamages(&damageList);
             }
+
+            // if (!isDamageExpired(damage)) // 데미지
+            // {
+            //     drawDamage(&damage);
+            // }
 
             drawPlayer(scarfy, player); // 플레이어
             // drawPlayerRec(player);

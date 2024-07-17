@@ -11,12 +11,14 @@ typedef struct DamageNode
 
 DamageNode* initializeList();
 
+bool isDamageListEmpty(DamageNode **head);
+
 void append(DamageNode **head, Damage newData);
 
 void deleteNode(DamageNode **head, int position);
 
 void removeExpiredNode(DamageNode **head);
 
-void drawDamages(DamageNode *node);
+void drawDamages(DamageNode **node);
 
 #endif

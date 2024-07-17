@@ -4,6 +4,7 @@
 #include "slime.h"
 #include "weapon.h"
 #include "damage.h"
+#include "linked_damage_list.h"
 
 typedef struct Player
 {
@@ -42,7 +43,7 @@ void updatePlayerPosition(Player *player);
 
 void moveLeft(Player *player);
 
-void attack(Player *player, Slime *slime, Damage *damage);
+void attack(Player *player, Slime *slime, DamageNode **damage);
 
 void updatePlayerFrame(Texture2D scarfy, Player *player);
 

@@ -43,39 +43,6 @@ void append(DamageNode **head, Damage newData)
     }
 }
 
-void deleteNode(DamageNode **head, int position)
-{
-    if (*head == NULL)
-    {
-        printf("List is empty.\n");
-        return;
-    }
-
-    DamageNode *temp = *head;
-
-    if (position == 0)
-    {
-        *head = temp->next;
-        free(temp);
-        return;
-    }
-
-    for (int i = 0; temp != NULL && i < position - 1; i++)
-    {
-        temp = temp->next;
-    }
-
-    if (temp == NULL || temp->next == NULL)
-    {
-        printf("Position not found.\n");
-        return;
-    }
-
-    DamageNode *next = temp->next->next;
-    free(temp->next);
-    temp->next = next;
-}
-
 void removeExpiredNode(DamageNode **head)
 {
     // 헤드가 NULL이면 바로 리턴
@@ -112,11 +79,12 @@ void removeExpiredNode(DamageNode **head)
 }
 
 
-void drawDamages(DamageNode *node)
-{
-    while (node != NULL)
+void drawDamages(DamageNode **node)
+{   
+    DamageNode *current = *node;
+    while (current != NULL)
     {
-        drawDamage(&(node->damage));
-        node = node->next;
+        drawDamage(&(current->damage));
+        current = current->next;
     }
 }
