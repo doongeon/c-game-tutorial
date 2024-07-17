@@ -49,7 +49,8 @@ Image GenerateUnderGroundTexture(int width, int height)
 typedef struct EnvItem
 {
     Rectangle rect;
-    int blocking;
+    bool blockX;
+    bool blockY;
     Color color;
 } EnvItem;
 // ----------------------------------------------------------------------------------
@@ -79,9 +80,10 @@ int main(void)
     Damage damages[255];
 
     EnvItem envItems[] = {
-        {{0, 0, screenWidth, screenHeight}, 0, SKYBLUE},
-        {{0, GROUND_Y_POSITION, 1000, 200}, 1, GRAY},
-        {{screenWidth / 2, GROUND_Y_POSITION - 30, 100, 30}, 1, GRAY}};
+        {{0, 0, screenWidth, screenHeight}, 0, 0, SKYBLUE},
+        {{0, GROUND_Y_POSITION, 1000, 200}, 0, 1, GRAY},
+        {{screenWidth / 2, GROUND_Y_POSITION - 30, 100, 30}, 0, 1, GRAY},
+        {{screenWidth / 2 - 100, GROUND_Y_POSITION - 30, 30, 30}, 0, 1, GRAY}};
     int envItemsLength = sizeof(envItems) / sizeof(EnvItem);
 
     Image grassImage = GenerateGrassTexture(100, 10);
@@ -107,7 +109,7 @@ int main(void)
             EnvItem *ei = envItems + i;
             Player *p = &player;
             if (
-                ei->blocking &&
+                ei->blockY &&
                 ei->rect.x <= p->position.x + abs((int)(p->frameRec.width)) - 30 &&
                 ei->rect.x + ei->rect.width >= p->position.x + 30 &&
                 ei->rect.y >= p->position.y + p->frameRec.height - 3 &&
@@ -125,7 +127,7 @@ int main(void)
         }
         else
         {
-            player.vMoveVector += 1;
+            player.vMoveVector += 1; // 중력처럼 작용
             player.jumpState = true;
         }
 
