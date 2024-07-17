@@ -16,3 +16,25 @@ EnvItem createEnvItem(char *name, Vector2 position, int width, int height, bool 
 
     return envItem;
 }
+
+float envItemLeft(EnvItem envitem)
+{
+    return envitem.rect.x;
+}
+
+float envItemRight(EnvItem envitem)
+{
+    return envitem.rect.x + envitem.rect.width;
+}
+
+
+float envItemTop(EnvItem envitem)
+{
+    return envitem.rect.y;
+}
+
+
+float envItemBot(EnvItem envitem)
+{
+    return envitem.rect.y + envitem.rect.height;
+}

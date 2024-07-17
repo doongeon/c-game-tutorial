@@ -85,10 +85,10 @@ int main(void)
             Player *p = &player;
             if (
                 ei->blockY &&
-                ei->rect.x <= playerRight(*p) &&
-                ei->rect.x + ei->rect.width >= playerLeft(*p) &&
-                ei->rect.y >= playerBot(*p) &&
-                ei->rect.y <= playerBot(*p) + player.vMoveVector)
+                envItemLeft(*ei) <= playerRight(*p) &&
+                envItemRight(*ei) >= playerLeft(*p) &&
+                envItemTop(*ei) >= playerBot(*p) &&
+                envItemTop(*ei) <= playerBot(*p) + player.vMoveVector)
             {
                 hitObstacleY = true;
                 if (hitObstacleY)
@@ -199,7 +199,6 @@ int main(void)
             //
             // for (int i = 0; i < envItemsLength; i++) // 블럭
             //     DrawRectangleRec(envItems[i].rect, envItems[i].color);
-
             drawGrassFieldTexture(envItems[1], grassTexture, dirtTexture);
             drawGrassFieldTexture(envItems[2], grassTexture, dirtTexture);
             drawGrassFieldTexture(envItems[3], grassTexture, dirtTexture);
