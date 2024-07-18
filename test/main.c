@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "constants.h"
 #include "circular_queue.h"
@@ -19,6 +20,7 @@ int main(void)
     // Initialization
     //------------------------------------------------------------------------------
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "animation tutorial");
+    SetRandomSeed((int)time(NULL));
 
     // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
     Texture2D scarfy = LoadTexture(TEXTURE_FILE_PATH); // Texture loading
