@@ -85,8 +85,13 @@ int main(void)
 
         handleEnvitemCollisionY(&player, mapCastle.envItems, mapCastle.envItemsLength);
         handleEnvitemCollisionX(&player, mapCastle.envItems, mapCastle.envItemsLength);
-        updatePlayerPosition(&player);
 
+        if (
+            playerLeft(player) + player.hMoveVector <= 0 ||
+            playerRight(player) + player.hMoveVector >= SCREEN_WIDTH)
+        {
+            player.hMoveVector = 0;
+        }
         if (!player.moveLeftState && !player.moveRightState && !player.jumpState)
         {
             if (player.hMoveVector > 0)
@@ -107,16 +112,12 @@ int main(void)
                 }
             }
         }
+        
+        updatePlayerPosition(&player);
 
         updatePlayerFrame(scarfy, &player); // Player
         //--------------------------------------------------------------------------
 
-        if (
-            playerLeft(player) + player.hMoveVector <= 0 ||
-            playerRight(player) + player.hMoveVector >= SCREEN_WIDTH)
-        {
-            player.hMoveVector = 0;
-        }
 
         // Draw
         //--------------------------------------------------------------------------
