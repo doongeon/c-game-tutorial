@@ -39,12 +39,12 @@ typedef struct Player
     Vector2 weaponRanegePosition;
 } Player;
 
-Player createPlayer()
+Player createPlayer(Vector2 position)
 {
     Player player;
 
     player.frameRec = (Rectangle){0.0f, 0.0f, (float)SCARFY_WIDTH / 6, (float)SCARFY_HEIGHT / 8 * 1};
-    player.position = (Vector2){550.0f, GROUND_Y_POSITION - player.frameRec.height};
+    player.position = (Vector2){position.x, position.y};
 
     player.hMoveVector = 0;
     player.vMoveVector = 0;

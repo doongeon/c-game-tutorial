@@ -34,7 +34,7 @@ typedef struct Player
     Vector2 weaponRanegePosition;
 } Player;
 
-Player createPlayer();
+Player createPlayer(Vector2 position);
 
 bool isWatchRight(Player player);
 
