@@ -29,11 +29,11 @@ typedef struct Slime
     int hitFrameCounter;
 } Slime;
 
-Slime createSlime()
+Slime createSlime(Vector2 position)
 {
     Slime slime;
     slime.frameRec = (Rectangle){0, 0, SLIME_SIZE, SLIME_SIZE};
-    slime.position = (Vector2){700, GROUND_Y_POSITION - slime.frameRec.height};
+    slime.position = (Vector2){position.x, position.y};
     slime.color = VIOLET;
 
     // States

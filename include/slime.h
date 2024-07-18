@@ -26,7 +26,7 @@ typedef struct Slime
     int hitFrameCounter;
 } Slime;
 
-Slime createSlime();
+Slime createSlime(Vector2 position);
 
 float slimeLeft(Slime slime);
 

@@ -30,7 +30,15 @@ int main(void)
     }
 
     Player player = createPlayer();
-    Slime slime = createSlime();
+    Slime slimes[] = {
+        createSlime((Vector2){380, GROUND_Y_POSITION - 40}),
+        createSlime((Vector2){480, GROUND_Y_POSITION - 40}),
+        createSlime((Vector2){580, GROUND_Y_POSITION - 40}),
+        createSlime((Vector2){680, GROUND_Y_POSITION - 40}),
+        createSlime((Vector2){780, GROUND_Y_POSITION - 40})};
+    int slimesLength = sizeof(slimes) / sizeof(Slime);
+
+    Slime slime = createSlime((Vector2){400, GROUND_Y_POSITION - 40});
     DamageNode *damageList = initializeList();
     EnvItem envItems[] = {
         createEnvItem(
@@ -73,7 +81,14 @@ int main(void)
         //--------------------------------------------------------------------------
         removeExpiredNode(&damageList);
 
-        updateSlimePosition(&slime, envItems, envItemsLength);
+
+        for(int i = 0; i< slimesLength; i++)
+        {
+            Slime *slimePtr = slimes + i;
+
+            updateSlimePosition(slimePtr, envItems, envItemsLength);
+        }
+        // updateSlimePosition(&slime, envItems, envItemsLength);
 
         if (IsKeyDown(KEY_A))
         {
@@ -86,10 +101,14 @@ int main(void)
                 player.vMoveVector = -10;
             setJumpState(&player);
         }
-        if (IsKeyDown(KEY_RIGHT)) movePlayerRight(&player);
-        if (IsKeyUp(KEY_RIGHT)) player.moveRightState = false;
-        if (IsKeyDown(KEY_LEFT)) movePlayerLeft(&player);
-        if (IsKeyUp(KEY_LEFT)) player.moveLeftState = false;
+        if (IsKeyDown(KEY_RIGHT))
+            movePlayerRight(&player);
+        if (IsKeyUp(KEY_RIGHT))
+            player.moveRightState = false;
+        if (IsKeyDown(KEY_LEFT))
+            movePlayerLeft(&player);
+        if (IsKeyUp(KEY_LEFT))
+            player.moveLeftState = false;
 
         handleEnvitemCollisionY(&player, envItems, envItemsLength);
         handleEnvitemCollisionX(&player, envItems, envItemsLength);
@@ -121,10 +140,9 @@ int main(void)
         updatePlayerFrame(scarfy, &player); // Player
         //--------------------------------------------------------------------------
 
-        if(
+        if (
             playerLeft(player) + player.hMoveVector <= 0 ||
-            playerRight(player) + player.hMoveVector >= SCREEN_WIDTH
-        )
+            playerRight(player) + player.hMoveVector >= SCREEN_WIDTH)
         {
             player.hMoveVector = 0;
         }
@@ -143,7 +161,13 @@ int main(void)
             drawGrassFieldTexture(envItems[2], grassTexture, dirtTexture);
             drawGrassFieldTexture(envItems[3], grassTexture, dirtTexture);
 
-            drawSlime(&slime); // 슬라임
+
+            for(int i = 0; i< slimesLength; i++)
+            {
+                Slime *slimePtr = slimes + i;
+
+                drawSlime(slimePtr); // 슬라임
+            }
 
             if (!isDamageListEmpty(&damageList)) // 데미지
             {
