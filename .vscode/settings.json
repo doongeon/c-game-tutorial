@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "env_item.h": "c",
+        "stdio.h": "c",
+        "texture.h": "c",
+        "constants.h": "c"
+    }
+}
