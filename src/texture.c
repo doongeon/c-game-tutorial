@@ -83,3 +83,49 @@ void drawGrassFieldTexture(EnvItem envItem, Texture2D grassTexture, Texture2D di
         }
     }
 }
+
+Image generateRedBlockTexture()
+{
+    Image image = GenImageColor(10, 10, DARKBROWN);
+
+    for (int y = 0; y < TEXTURE_HEIGHT; y += 2)
+    {
+        for (int x = 0; x < 10; x += 2)
+        {   
+            Color color = (GetRandomValue(0, 1) == 0) ? MAROON : RED;
+            if(x == 0 || y == 0)
+            {
+                color = GRAY;
+            }
+            ImageDrawPixel(&image, x, y, color);
+        }
+    }
+
+    return image;
+}
+
+Texture2D getRedBlockTexture()
+{
+    Image redBlockImage = generateRedBlockTexture();
+    Texture2D redBlockTexture = LoadTextureFromImage(redBlockImage);
+    UnloadImage(redBlockImage);
+
+    return redBlockTexture;
+}
+
+void drawRedBlockTexture(EnvItem envItem, Texture2D RedBlockTexture)
+{
+    for ( // 언덕 흙 텍스쳐
+        int x = envItem.rect.x;
+        x < envItem.rect.x + envItem.rect.width;
+        x += TEXTURE_WIDTH)
+    {
+        for (
+            int y = envItem.rect.y;
+            y < envItem.rect.y + envItem.rect.height;
+            y += TEXTURE_HEIGHT)
+        {
+            DrawTexture(RedBlockTexture, x, y, WHITE);
+        }
+    }
+}

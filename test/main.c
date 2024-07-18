@@ -22,14 +22,13 @@ int main(void)
 
     // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
     Texture2D scarfy = LoadTexture(TEXTURE_FILE_PATH); // Texture loading
-
     if (scarfy.id == 0)
     {
         printf("Failed to load texture\n");
         return -1; // Or handle the error as appropriate
     }
 
-    Player player = createPlayer();
+    Player player = createPlayer((Vector2){100, GROUND_Y_POSITION - 80});
     Slime slimes[] = {
         createSlime((Vector2){380, GROUND_Y_POSITION - 40}),
         createSlime((Vector2){480, GROUND_Y_POSITION - 40}),
@@ -63,11 +62,43 @@ int main(void)
             1,
             2,
             1, 1),
+        createEnvItem(
+            "wall top 01",
+            (Vector2){ENVITEM_HEIGHT_UNIT * 1 - 30, GROUND_Y_POSITION - ENVITEM_HEIGHT_UNIT * 2 - 20},
+            1,
+            1,
+            0, 0),
+        createEnvItem(
+            "wall top 01",
+            (Vector2){ENVITEM_HEIGHT_UNIT * 2 - 20, GROUND_Y_POSITION - ENVITEM_HEIGHT_UNIT * 2 - 20},
+            1,
+            1,
+            0, 0),
+        createEnvItem(
+            "wall top 02",
+            (Vector2){ENVITEM_HEIGHT_UNIT * 3 - 10, GROUND_Y_POSITION - ENVITEM_HEIGHT_UNIT * 2 - 20},
+            1,
+            1,
+            0, 0),
+        createEnvItem(
+            "wall top 03",
+            (Vector2){ENVITEM_HEIGHT_UNIT * 4, GROUND_Y_POSITION - ENVITEM_HEIGHT_UNIT * 2 - 20},
+            1,
+            1,
+            0, 0),
+        createEnvItem(
+            "wall",
+            (Vector2){0, GROUND_Y_POSITION - ENVITEM_HEIGHT_UNIT * 2},
+            5,
+            2,
+            0, 0),
+
     };
     int envItemsLength = sizeof(envItems) / sizeof(EnvItem);
 
     Texture2D grassTexture = getGrassTexture();
     Texture2D dirtTexture = getDirtTexture();
+    Texture2D RedBlockTexture = getRedBlockTexture();
 
     SetTargetFPS(60);
     //------------------------------------------------------------------------------
@@ -79,14 +110,11 @@ int main(void)
         //--------------------------------------------------------------------------
         removeExpiredNode(&damageList);
 
-
-        for(int i = 0; i< slimesLength; i++)
+        for (int i = 0; i < slimesLength; i++)
         {
             Slime *slimePtr = slimes + i;
-
-            updateSlimePosition(slimePtr, envItems, envItemsLength);
+            updateSlimePosition(slimes + i, envItems, envItemsLength);
         }
-        // updateSlimePosition(&slime, envItems, envItemsLength);
 
         if (IsKeyDown(KEY_A))
         {
@@ -133,8 +161,6 @@ int main(void)
             }
         }
 
-        // Set animating frame
-        //
         updatePlayerFrame(scarfy, &player); // Player
         //--------------------------------------------------------------------------
 
@@ -153,14 +179,17 @@ int main(void)
 
             // map
             //
-            // for (int i = 0; i < envItemsLength; i++) // 블럭
-            //     DrawRectangleRec(envItems[i].rect, envItems[i].color);
             drawGrassFieldTexture(envItems[1], grassTexture, dirtTexture);
             drawGrassFieldTexture(envItems[2], grassTexture, dirtTexture);
             drawGrassFieldTexture(envItems[3], grassTexture, dirtTexture);
+            drawRedBlockTexture(envItems[4], RedBlockTexture);
+            drawRedBlockTexture(envItems[5], RedBlockTexture);
+            drawRedBlockTexture(envItems[6], RedBlockTexture);
+            drawRedBlockTexture(envItems[7], RedBlockTexture);
+            drawRedBlockTexture(envItems[8], RedBlockTexture);
+            //
 
-
-            for(int i = 0; i< slimesLength; i++)
+            for (int i = 0; i < slimesLength; i++)
             {
                 Slime *slimePtr = slimes + i;
 
