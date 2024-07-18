@@ -18,10 +18,7 @@ int main(void)
 {
     // Initialization
     //------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
-
-    InitWindow(screenWidth, screenHeight, "animation tutorial");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "animation tutorial");
 
     // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
     Texture2D scarfy = LoadTexture(TEXTURE_FILE_PATH); // Texture loading
@@ -39,14 +36,14 @@ int main(void)
         createEnvItem(
             "background",
             (Vector2){0, 0},
-            screenWidth / ENVITEM_WIDTH_UNIT + 1,
-            screenHeight / ENVITEM_HEIGHT_UNIT + 1,
+            SCREEN_WIDTH / ENVITEM_WIDTH_UNIT + 1,
+            SCREEN_HEIGHT / ENVITEM_HEIGHT_UNIT + 1,
             0, 0),
         createEnvItem(
             "ground",
             (Vector2){0, GROUND_Y_POSITION},
-            screenWidth / ENVITEM_WIDTH_UNIT + 1,
-            (screenHeight - GROUND_Y_POSITION) / ENVITEM_HEIGHT_UNIT + 1,
+            SCREEN_WIDTH / ENVITEM_WIDTH_UNIT + 1,
+            (SCREEN_HEIGHT - GROUND_Y_POSITION) / ENVITEM_HEIGHT_UNIT + 1,
             0, 1),
         createEnvItem(
             "hill",
@@ -76,18 +73,7 @@ int main(void)
         //--------------------------------------------------------------------------
         removeExpiredNode(&damageList);
 
-        slimeRandomWalk(&slime);
-        handleSlimeEnvCollisionY(&slime, envItems, envItemsLength);
-        handleSlimeEnvCollisionX(&slime, envItems, envItemsLength);
-        slimeFriction(&slime);
-        if(
-            slimeLeft(slime) + slime.hMoveVector <= 0 ||
-            slimeRight(slime) + slime.hMoveVector >= screenWidth
-        )
-        {
-            slime.hMoveVector = 0;
-        }
-        updateSlimePosition(&slime);
+        updateSlimePosition(&slime, envItems, envItemsLength);
 
         if (IsKeyDown(KEY_A))
         {
@@ -137,7 +123,7 @@ int main(void)
 
         if(
             playerLeft(player) + player.hMoveVector <= 0 ||
-            playerRight(player) + player.hMoveVector >= screenWidth
+            playerRight(player) + player.hMoveVector >= SCREEN_WIDTH
         )
         {
             player.hMoveVector = 0;
@@ -166,7 +152,7 @@ int main(void)
 
             drawPlayer(scarfy, player); // 플레이어
             // drawPlayerRec(player);
-            drawPlayerWeaponRange(player);
+            // drawPlayerWeaponRange(player);
             //
         }
         EndDrawing();

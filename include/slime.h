@@ -44,7 +44,7 @@ void slimeFriction(Slime *slime);
 
 void slimeRandomWalk(Slime *slime);
 
-void updateSlimePosition(Slime *slime);
+void updateSlimePosition(Slime *slime, EnvItem *envItems, int envItemsLength);
 
 void drawSlime(Slime *slime);
 

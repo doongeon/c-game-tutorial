@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #define SLIME_SIZE 10
-#define SLIME_MAX_SPEED 0.5
+#define SLIME_MAX_SPEED 0.4
 #define SLIME_JUMP 10
 
 typedef struct Slime
@@ -221,10 +221,7 @@ void slimeFriction(Slime *slime)
         }
     }
 }
-// ----------------------------------------------------------------------
 
-// Update
-// ----------------------------------------------------------------------
 void slimeRandomWalk(Slime *slime)
 {
     slime->updateCounter++;
@@ -264,9 +261,14 @@ void slimeRandomWalk(Slime *slime)
         slime->moveRightState = false;
     }
 }
+// ----------------------------------------------------------------------
 
-void updateSlimePosition(Slime *slime)
-{
+// Update
+// ----------------------------------------------------------------------
+void updateSlimePosition(Slime *slime, EnvItem *envItems, int envItemsLength)
+{   
+    slimeRandomWalk(slime);
+
     if (slime->moveLeftState)
     {
         moveSlimeLeft(slime);
@@ -279,6 +281,17 @@ void updateSlimePosition(Slime *slime)
     {
         slimeFriction(slime);
     }
+
+    if(
+        slimeLeft(*slime) + slime->hMoveVector <= 0 ||
+        slimeRight(*slime) + slime->hMoveVector >= SCREEN_WIDTH
+    )
+    {
+        slime->hMoveVector = 0;
+    }
+
+    handleSlimeEnvCollisionY(slime, envItems, envItemsLength);
+    handleSlimeEnvCollisionX(slime, envItems, envItemsLength);
 
     slime->position.x += slime->hMoveVector;
     slime->position.y += slime->vMoveVector;
