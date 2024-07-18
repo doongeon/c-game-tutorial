@@ -61,7 +61,7 @@ Player createPlayer()
     player.jumpState = true;
 
     player.weapon = createSword();
-    player.weaponRanegePosition = (Vector2){player.position.x + abs((int)player.frameRec.width) / 2, player.position.y + player.frameRec.height - player.weapon.range.height + 10};
+    player.weaponRanegePosition = (Vector2){player.position.x + abs((int)player.frameRec.width) / 2, player.position.y + player.frameRec.height};
 
     return player;
 }
@@ -129,7 +129,7 @@ float weaponRangeTop(Player player)
 
 float weaponRangeBot(Player player)
 {
-    return player.weaponRanegePosition.y + player.weaponRanegePosition.y;
+    return player.weaponRanegePosition.y + player.weapon.range.height;
 }
 // ----------------------------------------------------------------------
 
@@ -174,8 +174,7 @@ void updatePlayerPosition(Player *player)
     player->position.y += player->vMoveVector;
 
     player->weaponRanegePosition = (Vector2){
-        player->position.x + abs((int)player->frameRec.width) / 2,
-        player->position.y + player->frameRec.height - player->weapon.range.height + 10};
+        player->position.x + abs((int)player->frameRec.width) / 2, playerTop(*player)};
 }
 
 void handleEnvitemCollisionY(Player *player, EnvItem *envItems, int envItemsLength)
@@ -278,8 +277,8 @@ void attack(Player *player, Slime *slime, DamageNode **damageList)
     if (
         slimeLeft(*slime) <= weaponRangeRight(*player) &&
         slimeRight(*slime) >= weaponRangeLeft(*player) &&
-        slimeTop(*slime) >= weaponRangeTop(*player) &&
         slimeTop(*slime) <= weaponRangeBot(*player) &&
+        slimeBot(*slime) >= weaponRangeTop(*player) &&
         player->attackFrameCounter == 1 &&
         player->frameCounter == 0)
     {
@@ -396,8 +395,8 @@ void drawPlayer(Texture2D scarfy, Player player)
 void drawPlayerRec(Player player)
 {
     DrawRectangleLines(
-        playerLeft(player),
-        playerTop(player),
+        player.position.x,
+        player.position.y,
         PLAYER_WIDTH,
         PLAYER_HEIGHT,
         LIME);

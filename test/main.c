@@ -77,6 +77,9 @@ int main(void)
         removeExpiredNode(&damageList);
 
         slimeRandomWalk(&slime);
+        handleSlimeEnvCollisionY(&slime, envItems, envItemsLength);
+        handleSlimeEnvCollisionX(&slime, envItems, envItemsLength);
+        slimeFriction(&slime);
         if(
             slimeLeft(slime) + slime.hMoveVector <= 0 ||
             slimeRight(slime) + slime.hMoveVector >= screenWidth
@@ -84,9 +87,6 @@ int main(void)
         {
             slime.hMoveVector = 0;
         }
-        handleSlimeEnvCollisionY(&slime, envItems, envItemsLength);
-        handleSlimeEnvCollisionX(&slime, envItems, envItemsLength);
-        slimeFriction(&slime);
         updateSlimePosition(&slime);
 
         if (IsKeyDown(KEY_A))

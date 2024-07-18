@@ -12,25 +12,31 @@ typedef struct Player
     Vector2 position;
     Rectangle frameRec;
 
+    // Moves
     float hMoveVector;
     float vMoveVector;
 
+    // Animation Frames
     int frameCounter;
     int standingFrameCounter;
     int attackFrameCounter;
     int moveRightFrameCounter;
     int moveLeftFrameCounter;
 
+    // States
     bool attackState;
     bool moveRightState;
     bool moveLeftState;
     bool jumpState;
 
+    // Weapon
     Weapon weapon;
     Vector2 weaponRanegePosition;
 } Player;
 
 Player createPlayer();
+
+bool isWatchRight(Player player);
 
 float playerRight(Player player);
 
