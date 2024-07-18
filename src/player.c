@@ -272,18 +272,22 @@ void movePlayerRight(Player *player)
     }
 }
 
-void attack(Player *player, Slime *slime, DamageNode **damageList)
+void attack(Player *player, Slime *slimes, int slimesLength, DamageNode **damageList)
 {
-    if (
-        slimeLeft(*slime) <= weaponRangeRight(*player) &&
-        slimeRight(*slime) >= weaponRangeLeft(*player) &&
-        slimeTop(*slime) <= weaponRangeBot(*player) &&
-        slimeBot(*slime) >= weaponRangeTop(*player) &&
-        player->attackFrameCounter == 1 &&
-        player->frameCounter == 0)
-    {
-        slime->hittedState = true;
-        append(damageList, createDamage(*slime));
+    for(int i = 0; i < slimesLength; i++)
+    {   
+        Slime *slimePtr = slimes + i;
+        if (
+            slimeLeft(*slimePtr) <= weaponRangeRight(*player) &&
+            slimeRight(*slimePtr) >= weaponRangeLeft(*player) &&
+            slimeTop(*slimePtr) <= weaponRangeBot(*player) &&
+            slimeBot(*slimePtr) >= weaponRangeTop(*player) &&
+            player->attackFrameCounter == 1 &&
+            player->frameCounter == 0)
+        {
+            slimePtr->hittedState = true;
+            append(damageList, createDamage(*slimePtr));
+        }
     }
 }
 

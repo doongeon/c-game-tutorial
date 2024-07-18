@@ -37,8 +37,6 @@ int main(void)
         createSlime((Vector2){680, GROUND_Y_POSITION - 40}),
         createSlime((Vector2){780, GROUND_Y_POSITION - 40})};
     int slimesLength = sizeof(slimes) / sizeof(Slime);
-
-    Slime slime = createSlime((Vector2){400, GROUND_Y_POSITION - 40});
     DamageNode *damageList = initializeList();
     EnvItem envItems[] = {
         createEnvItem(
@@ -93,7 +91,7 @@ int main(void)
         if (IsKeyDown(KEY_A))
         {
             setAttackState(&player);
-            attack(&player, &slime, &damageList);
+            attack(&player, slimes, slimesLength, &damageList);
         }
         if (IsKeyDown(KEY_D))
         {

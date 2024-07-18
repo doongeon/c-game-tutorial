@@ -64,7 +64,7 @@ void movePlayerLeft(Player *player);
 
 void movePlayerRight(Player *player);
 
-void attack(Player *player, Slime *slime, DamageNode **damage);
+void attack(Player *player, Slime *slimes, int slimesLength, DamageNode **damageList);
 
 void updatePlayerFrame(Texture2D scarfy, Player *player);
 
