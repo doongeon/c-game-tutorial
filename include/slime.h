@@ -2,6 +2,7 @@
 #define SLIME_H
 
 #include "raylib.h"
+#include "env_item.h"
 
 typedef struct Slime
 {
@@ -11,6 +12,7 @@ typedef struct Slime
 
     // Moves
     float hMoveVector;
+    float vMoveVector;
 
     // States
     bool hittedState;
@@ -32,7 +34,13 @@ float slimeRight(Slime slime);
 
 float slimeTop(Slime slime);
 
-float sliemBot(Slime slime);
+float slimeBot(Slime slime);
+
+void handleSlimeEnvCollisionY(Slime *slime, EnvItem *envItems, int envItemsLength);
+
+void handleSlimeEnvCollisionX(Slime *slime, EnvItem *envItems, int envItemsLength);
+
+void slimeFriction(Slime *slime);
 
 void slimeRandomWalk(Slime *slime);
 

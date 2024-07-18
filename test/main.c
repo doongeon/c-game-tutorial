@@ -74,14 +74,20 @@ int main(void)
     {
         // Update
         //--------------------------------------------------------------------------
-        handleEnvitemCollisionY(&player, envItems, envItemsLength);
-        handleEnvitemCollisionX(&player, envItems, envItemsLength);
-        updatePlayerPosition(&player);
         removeExpiredNode(&damageList);
 
         slimeRandomWalk(&slime);
+        if(
+            slimeLeft(slime) + slime.hMoveVector <= 0 ||
+            slimeRight(slime) + slime.hMoveVector >= screenWidth
+        )
+        {
+            slime.hMoveVector = 0;
+        }
+        handleSlimeEnvCollisionY(&slime, envItems, envItemsLength);
+        handleSlimeEnvCollisionX(&slime, envItems, envItemsLength);
+        slimeFriction(&slime);
         updateSlimePosition(&slime);
-
 
         if (IsKeyDown(KEY_A))
         {
@@ -98,6 +104,10 @@ int main(void)
         if (IsKeyUp(KEY_RIGHT)) player.moveRightState = false;
         if (IsKeyDown(KEY_LEFT)) movePlayerLeft(&player);
         if (IsKeyUp(KEY_LEFT)) player.moveLeftState = false;
+
+        handleEnvitemCollisionY(&player, envItems, envItemsLength);
+        handleEnvitemCollisionX(&player, envItems, envItemsLength);
+        updatePlayerPosition(&player);
 
         if (!player.moveLeftState && !player.moveRightState && !player.jumpState)
         {
@@ -125,6 +135,14 @@ int main(void)
         updatePlayerFrame(scarfy, &player); // Player
         //--------------------------------------------------------------------------
 
+        if(
+            playerLeft(player) + player.hMoveVector <= 0 ||
+            playerRight(player) + player.hMoveVector >= screenWidth
+        )
+        {
+            player.hMoveVector = 0;
+        }
+
         // Draw
         //--------------------------------------------------------------------------
         BeginDrawing();
@@ -148,7 +166,7 @@ int main(void)
 
             drawPlayer(scarfy, player); // 플레이어
             // drawPlayerRec(player);
-            // drawPlayerWeaponRange(player);
+            drawPlayerWeaponRange(player);
             //
         }
         EndDrawing();
