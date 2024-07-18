@@ -14,6 +14,7 @@
 #include "linked_damage_list.h"
 #include "env_item.h"
 #include "texture.h"
+#include "map_castle.h"
 
 int main(void)
 {
@@ -39,69 +40,7 @@ int main(void)
         createSlime((Vector2){780, GROUND_Y_POSITION - 40})};
     int slimesLength = sizeof(slimes) / sizeof(Slime);
     DamageNode *damageList = initializeList();
-    EnvItem envItems[] = {
-        createEnvItem(
-            "background",
-            (Vector2){0, 0},
-            SCREEN_WIDTH / ENVITEM_WIDTH_UNIT + 1,
-            SCREEN_HEIGHT / ENVITEM_HEIGHT_UNIT + 1,
-            0, 0),
-        createEnvItem(
-            "ground",
-            (Vector2){0, GROUND_Y_POSITION},
-            SCREEN_WIDTH / ENVITEM_WIDTH_UNIT + 1,
-            (SCREEN_HEIGHT - GROUND_Y_POSITION) / ENVITEM_HEIGHT_UNIT + 1,
-            0, 1),
-        createEnvItem(
-            "hill",
-            (Vector2){500, GROUND_Y_POSITION - ENVITEM_HEIGHT_UNIT},
-            3,
-            1,
-            0, 1),
-        createEnvItem(
-            "fence",
-            (Vector2){300, GROUND_Y_POSITION - ENVITEM_HEIGHT_UNIT},
-            1,
-            2,
-            1, 1),
-        createEnvItem(
-            "wall top 01",
-            (Vector2){ENVITEM_HEIGHT_UNIT * 1 - 30, GROUND_Y_POSITION - ENVITEM_HEIGHT_UNIT * 2 - 20},
-            1,
-            1,
-            0, 0),
-        createEnvItem(
-            "wall top 01",
-            (Vector2){ENVITEM_HEIGHT_UNIT * 2 - 20, GROUND_Y_POSITION - ENVITEM_HEIGHT_UNIT * 2 - 20},
-            1,
-            1,
-            0, 0),
-        createEnvItem(
-            "wall top 02",
-            (Vector2){ENVITEM_HEIGHT_UNIT * 3 - 10, GROUND_Y_POSITION - ENVITEM_HEIGHT_UNIT * 2 - 20},
-            1,
-            1,
-            0, 0),
-        createEnvItem(
-            "wall top 03",
-            (Vector2){ENVITEM_HEIGHT_UNIT * 4, GROUND_Y_POSITION - ENVITEM_HEIGHT_UNIT * 2 - 20},
-            1,
-            1,
-            0, 0),
-        createEnvItem(
-            "wall",
-            (Vector2){0, GROUND_Y_POSITION - ENVITEM_HEIGHT_UNIT * 2},
-            5,
-            2,
-            0, 0),
-        createEnvItem(
-            "pond",
-            (Vector2){200, GROUND_Y_POSITION},
-            2,
-            0,
-            0, 0)
-    };
-    int envItemsLength = sizeof(envItems) / sizeof(EnvItem);
+    Map mapCastle = getMapCastle();
 
     Texture2D grassTexture = getGrassTexture();
     Texture2D dirtTexture = getDirtTexture();
@@ -121,7 +60,7 @@ int main(void)
         for (int i = 0; i < slimesLength; i++)
         {
             Slime *slimePtr = slimes + i;
-            updateSlimePosition(slimes + i, envItems, envItemsLength);
+            updateSlimePosition(slimes + i, mapCastle.envItems, mapCastle.envItemsLength);
         }
 
         if (IsKeyDown(KEY_A))
@@ -144,8 +83,8 @@ int main(void)
         if (IsKeyUp(KEY_LEFT))
             player.moveLeftState = false;
 
-        handleEnvitemCollisionY(&player, envItems, envItemsLength);
-        handleEnvitemCollisionX(&player, envItems, envItemsLength);
+        handleEnvitemCollisionY(&player, mapCastle.envItems, mapCastle.envItemsLength);
+        handleEnvitemCollisionX(&player, mapCastle.envItems, mapCastle.envItemsLength);
         updatePlayerPosition(&player);
 
         if (!player.moveLeftState && !player.moveRightState && !player.jumpState)
@@ -187,30 +126,37 @@ int main(void)
 
             // map
             //
-            drawGrassFieldTexture(envItems[1], grassTexture, dirtTexture);
-            drawGrassFieldTexture(envItems[2], grassTexture, dirtTexture);
-            drawGrassFieldTexture(envItems[3], grassTexture, dirtTexture);
-            drawRedBlockTexture(envItems[4], redBlockTexture);
-            drawRedBlockTexture(envItems[5], redBlockTexture);
-            drawRedBlockTexture(envItems[6], redBlockTexture);
-            drawRedBlockTexture(envItems[7], redBlockTexture);
-            drawRedBlockTexture(envItems[8], redBlockTexture);
-            drawWaterTexture(envItems[9], waterTexutre);
+            drawMapCastle(
+                mapCastle,
+                grassTexture,
+                dirtTexture,
+                redBlockTexture,
+                waterTexutre);
             //
 
+
+            // 슬라임
+            //
             for (int i = 0; i < slimesLength; i++)
             {
                 Slime *slimePtr = slimes + i;
-
-                drawSlime(slimePtr); // 슬라임
+                drawSlime(slimePtr); 
             }
+            //
 
-            if (!isDamageListEmpty(&damageList)) // 데미지
+
+            // 데미지
+            //
+            if (!isDamageListEmpty(&damageList)) 
             {
                 drawDamages(&damageList);
             }
+            //
 
-            drawPlayer(scarfy, player); // 플레이어
+
+            // 플레이어
+            //
+            drawPlayer(scarfy, player); 
             // drawPlayerRec(player);
             // drawPlayerWeaponRange(player);
             //
@@ -222,6 +168,7 @@ int main(void)
     // De-Initialization
     //------------------------------------------------------------------------------
     UnloadTexture(scarfy);
+    freeMap(mapCastle);
 
     CloseWindow();
     //------------------------------------------------------------------------------
