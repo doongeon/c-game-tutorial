@@ -92,13 +92,19 @@ int main(void)
             5,
             2,
             0, 0),
-
+        createEnvItem(
+            "pond",
+            (Vector2){200, GROUND_Y_POSITION},
+            2,
+            0,
+            0, 0)
     };
     int envItemsLength = sizeof(envItems) / sizeof(EnvItem);
 
     Texture2D grassTexture = getGrassTexture();
     Texture2D dirtTexture = getDirtTexture();
-    Texture2D RedBlockTexture = getRedBlockTexture();
+    Texture2D redBlockTexture = getRedBlockTexture();
+    Texture2D waterTexutre = getWaterTexture();
 
     SetTargetFPS(60);
     //------------------------------------------------------------------------------
@@ -182,11 +188,12 @@ int main(void)
             drawGrassFieldTexture(envItems[1], grassTexture, dirtTexture);
             drawGrassFieldTexture(envItems[2], grassTexture, dirtTexture);
             drawGrassFieldTexture(envItems[3], grassTexture, dirtTexture);
-            drawRedBlockTexture(envItems[4], RedBlockTexture);
-            drawRedBlockTexture(envItems[5], RedBlockTexture);
-            drawRedBlockTexture(envItems[6], RedBlockTexture);
-            drawRedBlockTexture(envItems[7], RedBlockTexture);
-            drawRedBlockTexture(envItems[8], RedBlockTexture);
+            drawRedBlockTexture(envItems[4], redBlockTexture);
+            drawRedBlockTexture(envItems[5], redBlockTexture);
+            drawRedBlockTexture(envItems[6], redBlockTexture);
+            drawRedBlockTexture(envItems[7], redBlockTexture);
+            drawRedBlockTexture(envItems[8], redBlockTexture);
+            drawWaterTexture(envItems[9], waterTexutre);
             //
 
             for (int i = 0; i < slimesLength; i++)
