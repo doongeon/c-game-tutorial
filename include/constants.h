@@ -1,4 +1,12 @@
+
+// cmake 빌드시
+//
 #define TEXTURE_FILE_PATH "/Users/donggeon/Documents/c-raylib/resources/character.png"
+
+// emcc 빌드시
+//
+// #define TEXTURE_FILE_PATH "/resources/character.png"
+// 
 
 #define SCARFY_WIDTH 432
 #define SCARFY_HEIGHT 384
