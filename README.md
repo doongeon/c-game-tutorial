@@ -1,4 +1,4 @@
-# Animation Tutorial Game
+# video game tutorial 
 
 이 프로젝트는 raylib 라이브러리를 사용하여 2D 게임을 만드는 방법을 배울 수 있는 간단한 예제입니다.
 
@@ -30,7 +30,7 @@ raylib이 필요합니다.
 
 cmake에 익숙하시면 raylib 설치경로를 `CMakeLists.txt`에서 변경해 주세요
 
-### homewrew로 raylib 설치
+### homebrew로 raylib 설치
 
 ```
 brew install raylib
