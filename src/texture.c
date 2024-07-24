@@ -149,10 +149,10 @@ Image generateWaterTexture()
 Texture2D getWaterTexture()
 {
     Image waterImage = generateWaterTexture();
-    Texture2D redBlockTexture = LoadTextureFromImage(waterImage);
+    Texture2D waterTexture = LoadTextureFromImage(waterImage);
     UnloadImage(waterImage);
 
-    return redBlockTexture;
+    return waterTexture;
 }
 
 void drawWaterTexture(EnvItem envItem, Texture2D waterTexture)
