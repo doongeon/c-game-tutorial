@@ -11,6 +11,11 @@
 #define PLAYER_WIDTH 13
 #define PLAYER_HEIGHT 30
 
+typedef struct Moves
+{
+    float hMoveVector;
+    float vMoveVector;
+} Moves;
 
 typedef struct Player
 {
@@ -18,6 +23,7 @@ typedef struct Player
     Rectangle frameRec;
 
     // Moves
+    Moves moves;
     float hMoveVector;
     float vMoveVector;
 
@@ -65,10 +71,6 @@ Player createPlayer(Vector2 position)
 
     return player;
 }
-
-
-
-
 
 // Utils
 // ----------------------------------------------------------------------
@@ -132,10 +134,6 @@ float weaponRangeBot(Player player)
     return player.weaponRanegePosition.y + player.weapon.range.height;
 }
 // ----------------------------------------------------------------------
-
-
-
-
 
 // Update
 // ----------------------------------------------------------------------
@@ -274,8 +272,8 @@ void movePlayerRight(Player *player)
 
 void attack(Player *player, Slime *slimes, int slimesLength, DamageNode **damageList)
 {
-    for(int i = 0; i < slimesLength; i++)
-    {   
+    for (int i = 0; i < slimesLength; i++)
+    {
         Slime *slimePtr = slimes + i;
         if (
             slimeLeft(*slimePtr) <= weaponRangeRight(*player) &&
@@ -376,18 +374,10 @@ void updatePlayerFrame(Texture2D scarfy, Player *player)
 }
 // ----------------------------------------------------------------------
 
-
-
-
-
 // Control
 // ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
-
-
-
-
 
 // Draw
 // ----------------------------------------------------------------------
